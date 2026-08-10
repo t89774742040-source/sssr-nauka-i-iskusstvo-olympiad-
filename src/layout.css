@@ -1,0 +1,136 @@
+:root {
+  --page-max: 1480px;
+  --page-gutter: clamp(24px, 2.6vw, 40px);
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@media (min-width: 761px) {
+  header {
+    width: 100%;
+    padding-inline: max(var(--page-gutter), calc((100% - var(--page-max)) / 2)) !important;
+  }
+
+  #root > main,
+  main:not(.compact) {
+    width: 100% !important;
+    max-width: none !important;
+    margin-inline: 0 !important;
+  }
+
+  .hero,
+  .routes,
+  .adult {
+    width: min(calc(100% - (2 * var(--page-gutter))), var(--page-max)) !important;
+    max-width: var(--page-max) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .hero,
+  .routes {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .grid {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .grid > *,
+  .route,
+  .route-photo,
+  .hero > *,
+  .route-cover > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .highrise-module .route-cover,
+  .route-start .route-cover {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    box-shadow: 7px 7px 0 #28536d !important;
+  }
+
+  .highrise-module .route-cover > img,
+  .route-start .route-cover > img,
+  .vdnh-module .route-cover > img,
+  .route-start .route-cover.person-cover > img {
+    width: calc(100% - 40px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    align-self: center !important;
+    margin: 20px !important;
+    border: 12px solid #fff !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    object-fit: contain !important;
+  }
+
+  .highrise-module .route-cover > div,
+  .route-start .route-cover > div {
+    align-self: stretch !important;
+    justify-content: center !important;
+    border-left: 0 !important;
+    padding: 34px 42px !important;
+  }
+
+  .highrise-module .route-cover dl .architects,
+  .route-start .route-cover dl .architects {
+    grid-column: 1 / -1 !important;
+  }
+
+  .highrise-module .route-cover dd,
+  .route-start .route-cover dd {
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  :root {
+    --page-gutter: 16px;
+  }
+
+  header {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-inline: var(--page-gutter) !important;
+  }
+
+  .hero,
+  .routes,
+  .adult,
+  main.compact,
+  .lesson,
+  .route-start,
+  .highrise-module {
+    width: calc(100% - (2 * var(--page-gutter))) !important;
+    max-width: none !important;
+    margin-left: var(--page-gutter) !important;
+    margin-right: var(--page-gutter) !important;
+  }
+
+  .hero,
+  .routes {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
