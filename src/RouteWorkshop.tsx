@@ -21,7 +21,7 @@ export type WorkshopData = {
 
 const clean = (value: string) => value.trim().toLocaleLowerCase("ru-RU").replace(/ё/g, "е");
 
-export default function RouteWorkshop({ data, onBack, onFinish }: { data: WorkshopData; onBack: () => void; onFinish: () => void }) {
+export default function RouteWorkshop({ data, onFinish }: { data: WorkshopData; onBack: () => void; onFinish: () => void }) {
   const [task, setTask] = useState(0);
   const [answer, setAnswer] = useState("");
   const [choice, setChoice] = useState<number | null>(null);
@@ -35,7 +35,6 @@ export default function RouteWorkshop({ data, onBack, onFinish }: { data: Worksh
   const next = () => { setTask(task + 1); setAnswer(""); setChoice(null); setOrder([]); setErrors([]); setMessage(""); setSuccess(false); window.scrollTo(0, 0); };
 
   return <div className="workshop embedded-workshop">
-    <button className="back" onClick={onBack}>← План темы</button>
     <div className="workshop-progress"><span>{data.route.toUpperCase()} • ОЛИМПИАДНАЯ МАСТЕРСКАЯ • ЗАДАНИЕ {task + 1} ИЗ 6</span><div><i style={{ width: `${(task + 1) / 6 * 100}%` }} /></div></div>
     <section className="workshop-sheet">
       <div className="chapter-label">ОЛИМПИАДНЫЕ ФОРМАТЫ</div>
