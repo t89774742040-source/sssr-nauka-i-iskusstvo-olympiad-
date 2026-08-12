@@ -630,7 +630,7 @@ const highriseLessons = [
   },
   {
     title: "МИД и две гостиницы",
-    text: "Здание Министерства иностранных дел находится на Смоленской площади. Гостиница «Украина» стоит на Дорогомиловской набережной, а «Ленинградская» — около Комсомольской площади. Высотка МИД — единственная из семи, на шпиле которой нет звезды.",
+    text: "Здание Министерства иностранных дел находится на Смоленской площади. Гостиница «Украина» стоит на Дорогомиловской набережной, а гостиница «Ленинградская» — около Комсомольской площади. Высотка МИД — единственная из семи, на шпиле которой нет звезды.",
     fact: "МИД — Смоленская площадь; «Украина» — Дорогомиловская набережная; «Ленинградская» — Комсомольская площадь.",
   },
   {
@@ -743,7 +743,7 @@ function mixHighriseQuestion(q: readonly [string, readonly string[], number]) {
   return { title: q[0], options: variants.map(v => v.text), answer: variants.findIndex(v => v.right) };
 }
 
-function HighriseRoute({ onBack, onMatching }: { onBack: () => void; onMatching: () => void }) {
+function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onMatching: () => void; onNext: () => void }) {
   const [page, setPage] = useState<"plan" | "lesson" | "mini" | "workshop" | "cards" | "final">("plan");
   const [step, setStep] = useState(0);
   const [miniI, setMiniI] = useState(0);
@@ -810,7 +810,7 @@ function HighriseRoute({ onBack, onMatching }: { onBack: () => void; onMatching:
       {page === "mini" && <section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightHighriseFacts(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>{setPick(i); if(i===q.answer) setScore(score+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===q.answer?"Верно.":<>Неверно. Правильный ответ: {highlightOptionFacts(q.options[q.answer])}.</>}</p><button className="primary" onClick={nextQuestion}>{miniI<4?"Следующее задание →":part<2?"Следующая часть →":"В олимпиадную мастерскую →"}</button></>}</section>}
       {page === "workshop" && <RouteWorkshop data={highriseWorkshop} onBack={() => jump("plan")} onFinish={() => jump("cards")} />}
       {page === "cards" && <><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Сначала произнеси ответ вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{revealed.includes(i) ? highlightHighriseFacts(c[1]) : <strong style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{highlightHighriseFacts(c[0])}</strong>}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
-      {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightHighriseFacts(finalQuestions[finalI].title)}</h1>{finalQuestions[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finalQuestions[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finalQuestions[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finalQuestions[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finalQuestions[finalI].options[finalQuestions[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore>=8?"Олимпиадный уровень!":"Нужно ещё одно повторение"}</h1><p>{finalScore>=8?"Названия, даты и соответствия усвоены уверенно.":"Вернись к карточкам, а затем пройди проверку снова."}</p><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Другой вариант теста →</button></>}</section>}
+      {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightHighriseFacts(finalQuestions[finalI].title)}</h1>{finalQuestions[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finalQuestions[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finalQuestions[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finalQuestions[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finalQuestions[finalI].options[finalQuestions[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
     </main>
   );
 }
@@ -893,7 +893,7 @@ const vdnhLessonMedia = vdnhLessons.map((_, index) => {
   return fountains[index - 6];
 });
 
-function VdnhRoute({onBack,onMatching}:{onBack:()=>void;onMatching:()=>void}){
+function VdnhRoute({onBack,onMatching,onNext}:{onBack:()=>void;onMatching:()=>void;onNext:()=>void}){
   const [page,setPage]=useState<"plan"|"lesson"|"mini"|"workshop"|"cards"|"final">("plan");
   const [step,setStep]=useState(0),[miniI,setMiniI]=useState(0),[pick,setPick]=useState<number|null>(null),[score,setScore]=useState(0),[finalI,setFinalI]=useState(0),[finalScore,setFinalScore]=useState(0);
   const [revealed,setRevealed]=useState<number[]>([]);
@@ -913,7 +913,7 @@ function VdnhRoute({onBack,onMatching}:{onBack:()=>void;onMatching:()=>void}){
     {page==="mini"&&<section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightVdnh(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===q.answer)setScore(score+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===q.answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(q.options[q.answer])}.</>}</p><button className="primary" onClick={nextMini}>{miniI<4?"Следующее задание →":part<2?"Следующая часть →":"В олимпиадную мастерскую →"}</button></>}</section>}
     {page==="workshop"&&<RouteWorkshop data={vdnhWorkshop} onBack={()=>jump("plan")} onFinish={()=>jump("cards")}/>} 
     {page==="cards"&&<><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Ответь вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{highlightVdnh(revealed.includes(i)?c[1]:c[0])}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
-    {page==="final"&&<section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightVdnh(finals[finalI].title)}</h1>{finals[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finals[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finals[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finals[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finals[finalI].options[finals[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore>=8?"Олимпиадный уровень!":"Нужно повторить карточки"}</h1><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Другой вариант теста →</button></>}</section>}
+    {page==="final"&&<section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightVdnh(finals[finalI].title)}</h1>{finals[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finals[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finals[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finals[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finals[finalI].options[finals[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
   </main>
 }
 
@@ -932,7 +932,7 @@ function App() {
     () =>
       [...quiz.slice(0, 18)]
         .sort(() => Math.random() - 0.5)
-        .slice(0, 15)
+        .slice(0, 10)
         .map(mixQuestion),
     [quizVersion],
   );
@@ -1065,11 +1065,11 @@ function App() {
           </section>
         </main>
       )}
-      {view === "highrise" && <HighriseRoute onBack={() => go("home")} onMatching={() => go("cards")} />}
-      {view === "vdnh" && <VdnhRoute onBack={() => go("home")} onMatching={() => go("cards")} />}
-      {view === "sats" && <SatsRoute onBack={() => go("home")} onMatching={() => go("cards")} />}
-      {view === "stars" && <StarsRoute onBack={() => go("home")} onMatching={() => go("cards")} />}
-      {view === "tower" && <TowerRoute onBack={() => go("home")} onMatching={() => go("cards")} />}
+      {view === "highrise" && <HighriseRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("vdnh")} />}
+      {view === "vdnh" && <VdnhRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("sats")} />}
+      {view === "sats" && <SatsRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("stars")} />}
+      {view === "stars" && <StarsRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("route")} />}
+      {view === "tower" && <TowerRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("finale")} />}
       {view === "finale" && <FinalExpedition onBack={() => go("home")} />}
       {view === "route" && (
         <main className="compact route-start">
@@ -1139,7 +1139,7 @@ function App() {
             <button className="part-row final-row" onClick={() => go("quiz")}>
               <span>
                 <b>Часть 6. Итоговая проверка</b>
-                <small>15 олимпиадных заданий</small>
+                <small>10 олимпиадных заданий</small>
               </span>
               <span>Открыть →</span>
             </button>
@@ -1410,8 +1410,8 @@ function App() {
             ← На главную
           </button>
           <section className="quiz">
-            <span>ОЛИМПИАДНАЯ ПРОВЕРКА • {Math.min(qi + 1, 15)} / 15</span>
-            {qi < 15 ? (
+            <span>ОЛИМПИАДНАЯ ПРОВЕРКА • {Math.min(qi + 1, 10)} / 10</span>
+            {qi < 10 ? (
               <>
                 <h1>{questions[qi][0]}</h1>
                 {questions[qi][1].map((o, i) => (
@@ -1451,29 +1451,11 @@ function App() {
               <>
                 <div className="result">
                   {score}
-                  <small>из 15</small>
+                  <small>из 10</small>
                 </div>
-                <h1>
-                  {score >= 12
-                    ? "Олимпиадный уровень подтверждён!"
-                    : "Маршрут стоит повторить"}
-                </h1>
-                <p>
-                  {score >= 12
-                    ? "Ты различаешь точные формулировки, даты и связи между фактами."
-                    : "Повтори маршрут и отвечай на карточки вслух без подсказок."}
-                </p>
-                <button
-                  className="primary"
-                  onClick={() => {
-                    setQi(0);
-                    setScore(0);
-                    setQpick(null);
-                    setQuizVersion(quizVersion + 1);
-                  }}
-                >
-                  Новый вариант
-                </button>
+                <h1>{score === 10 ? "МОЛОДЕЦ" : "Есть ошибки"}</h1>
+                <p>{score === 10 ? "Все задания выполнены верно. Можно переходить к следующему маршруту." : "Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>
+                {score === 10 ? <button className="primary" onClick={() => go("tower")}>Следующий маршрут →</button> : <div className="task-actions"><button className="primary" onClick={() => { setQi(0); setScore(0); setQpick(null); setQuizVersion(quizVersion + 1); }}>Пройти ещё раз</button><button className="secondary" onClick={() => go("tower")}>Перейти к следующему маршруту →</button></div>}
               </>
             )}
           </section>
