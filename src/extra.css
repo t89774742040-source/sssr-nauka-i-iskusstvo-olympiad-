@@ -25,6 +25,7 @@
 }
 .hero-card:has(> img:only-of-type) { padding-bottom: 24px; }
 .hero-card { transform: translateX(-24px) rotate(1deg); }
+.hero-card .ussr-expansion { margin: 0 0 18px; color: #28536d; font-size: 18px; line-height: 1.35; letter-spacing: .4px; }
 .hero-card img[src*="soviet-classroom"] { height: 390px; object-position: center; filter: sepia(.28) saturate(.8); }
 .route-photo {
   width: 100%;
