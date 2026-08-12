@@ -411,6 +411,41 @@
   }
 }
 
+.vdnh-cover-image {
+  margin: 20px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  background: #fff;
+}
+
+.vdnh-cover-image img {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  object-fit: contain;
+  filter: sepia(.12);
+}
+
+.vdnh-cover-image figcaption {
+  padding: 12px 16px 15px;
+  color: #263d3b;
+  font-size: 17px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .vdnh-cover-image {
+    margin: 14px;
+  }
+
+  .vdnh-cover-image img {
+    height: auto;
+  }
+}
+
 .matching-practice {
   margin-top: 48px;
   padding-top: 34px;
