@@ -610,11 +610,11 @@ function Workshop({
 const highriseLessons = [
   {
     title: "Почему появление высоток стало событием?",
-    text: "Ещё сто лет назад Москва была в основном малоэтажным городом: дома имели два-три этажа, а над ними возвышались церкви и колокольни. Большие дома москвичи называли „тучерезами“, потому что казалось, будто они достают до облаков. Когда вскоре после Великой Отечественной войны начали строить высотные дома — высотки, это стало настоящим событием. Новыми зданиями гордилась не только Москва, но и вся страна.",
-    fact: "Раньше Москва была малоэтажной, а большие дома называли „тучерезами“. После войны началось строительство высоток.",
+    text: "Ещё сто лет назад Москва была в основном малоэтажным городом: дома имели два-три этажа, а над ними возвышались церкви и колокольни. Горожане толпами ходили смотреть на первый пятиэтажный дом, построенный в 1875 году на углу улицы Ильинки и Старопанского переулка, — он казался просто огромным. Большие дома москвичи называли „тучерезами“, потому что казалось, будто они достают до облаков. Когда вскоре после Великой Отечественной войны начали строить высотные дома — высотки, это стало настоящим событием. Новыми зданиями гордилась не только Москва, но и вся страна.",
+    fact: "1875 год — первый пятиэтажный дом; раньше Москва была малоэтажной, а большие дома называли „тучерезами“. После войны началось строительство высоток.",
   },
   {
-    title: "Восемь заложили — семь построили",
+    title: "Ожерелье из высоток",
     text: "В 1947 году Москва праздновала 800-летие. К юбилею заложили первые камни в основание восьми высотных зданий — по числу прожитых городом столетий. Построили семь, а восьмую, запланированную в Зарядье, так и не построили.",
     fact: "1947 год — 800-летие Москвы — восемь заложили — семь построили.",
   },
@@ -649,17 +649,35 @@ const highriseLessons = [
     fact: "Зарядье — место, где была запланирована восьмая, но не построенная высотка.",
   },
   {
-    title: "Стальной каркас высоток",
-    text: "В основе конструкции высоток находятся стальные балки, дополнительно укреплённые бетоном. Во время строительства был хорошо виден каркас здания. Маленькие модели будущих домов испытывали давлением, чтобы проверить прочность деталей.",
-    fact: "Стальные балки и бетон образуют прочный каркас; модели зданий испытывали давлением.",
+    title: "Каркасная технология и проектирование",
+    text: "Над проектом каждой высотки работала отдельная группа архитекторов. Для устойчивости зданиям придавали сложную форму. В основе конструкции находились стальные балки, дополнительно укреплённые бетоном. Такая технология называлась каркасной. Маленькие модели будущих домов испытывали давлением, чтобы проверить прочность деталей. Для строительства инженеры разработали вертикально-подвижные краны, которые по мере роста здания поднимали сами себя с этажа на этаж.",
+    fact: "Отдельные группы архитекторов — сложная форма зданий — каркасная технология — испытание моделей — вертикально-подвижные краны.",
+  },
+  {
+    title: "Дворец, который не построили",
+    text: "Центром новой Москвы хотели сделать Дворец Советов — самое огромное здание в мире. Его планировали построить на месте храма Христа Спасителя. В 1931 году храм взорвали, а в международном конкурсе победил проект архитектора Бориса Иофана. До войны успели вырыть котлован и заложить фундамент. Во время войны заготовленные материалы использовали для противотанковых ежей и мостов. После войны у страны не было сил и средств продолжать такую огромную стройку, поэтому Дворец Советов так и не построили.",
+    fact: "Дворец Советов — центр новой Москвы — Борис Иофан — фундамент заложили — после войны строительство не продолжили.",
+  },
+  {
+    title: "Почему высотки такие нарядные?",
+    text: "Архитекторы хотели придать высоткам черты традиционной русской архитектуры: их силуэты напоминают башни Кремля и русские соборы. Стены облицевали керамикой, а скульптуры сделали из прочного искусственного материала. Часть деталей интерьера изготовили из папье-маше — массы из бумаги и клея. Раньше такой приём использовал граф Шереметев в своём дворце в усадьбе Кусково. Папье-маше помогло удешевить отделку и уменьшить вес зданий.",
+    fact: "Башни Кремля и русские соборы — керамика — искусственный материал — папье-маше — граф Шереметев — Кусково.",
+  },
+  {
+    title: "Борьба с подземными реками",
+    text: "Под Москвой находятся глина, песок, трубы коммуникаций и многочисленные подземные реки. Вода могла проникнуть в котлованы, подготовленные для строительства. Поэтому при устройстве фундамента землю временно замораживали: делали скважины и заливали в них специальный раствор. Замороженный грунт становился твёрдым, как скала, и не пропускал воду. Рассказы о постоянно работающих холодильниках под высотками — городская легенда.",
+    fact: "Подземные реки — временное замораживание грунта — твёрдая земля не пропускает воду — постоянные холодильники являются легендой.",
   },
 ];
 
 const highriseKeyFacts = [
-  "1947 году", "1947 год", "800-летие Москвы", "семь", "Семь", "восемь", "Восемь",
+  "Бориса Иофана", "храм Христа Спасителя", "первого пятиэтажного дома",
+  "1875 году", "1875 год", "1947 году", "1947 год", "800-летие Москвы", "семь", "Семь", "восемь", "Восемь",
   "МГУ", "МИД", "«Украина»", "«Ленинградская»", "Московского государственного университета",
   "Воробьёвых горах", "Смоленской площади", "Дорогомиловской набережной", "Комсомольской площади", "Котельнической набережной",
   "Кудринской площади", "Красных Ворот", "Дом авиаторов", "Зарядье", "«Высотка»", "стальные балки", "бетоном",
+  "Дворец Советов", "Борис Иофан", "1931 году", "храма Христа Спасителя", "каркасной", "вертикально-подвижные краны",
+  "башни Кремля", "русские соборы", "керамикой", "папье-маше", "граф Шереметев", "Кусково", "подземные реки", "городская легенда",
 ];
 
 const highriseFactPattern = new RegExp(`(${highriseKeyFacts.map(x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
@@ -670,7 +688,7 @@ function highlightHighriseFacts(text: string) {
   );
 }
 
-const firstHighriseKeyFacts = ["„тучерезами“", "высотки"];
+const firstHighriseKeyFacts = ["1875 году", "улицы Ильинки", "Старопанского переулка", "„тучерезами“", "высотки"];
 const firstHighriseFactPattern = new RegExp(`(${firstHighriseKeyFacts.map(x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
 
 function highlightFirstHighriseFacts(text: string) {
@@ -732,6 +750,13 @@ const highriseMini = [
     ["Что размещалось в высотке у Красных Ворот?", ["Министерство путей сообщения и квартиры", "Только университет", "Только гостиница"], 0],
     ["Что находится в основе конструкции московских высоток?", ["Стальные балки, укреплённые бетоном", "Только деревянные брёвна", "Стеклянные колонны без каркаса"], 0],
   ],
+  [
+    ["Какое здание планировали сделать центром новой Москвы?", ["Дворец Советов", "Главное здание МГУ", "Гостиницу «Украина»"], 0],
+    ["Чей проект Дворца Советов победил в международном конкурсе?", ["Бориса Иофана", "Михаила Посохина", "Константина Топуридзе"], 0],
+    ["Из какого лёгкого материала изготовили часть деталей интерьера высоток?", ["Из папье-маше", "Из чистого золота", "Из гранитных блоков"], 0],
+    ["Где граф Шереметев раньше использовал отделку, похожую на папье-маше в высотках?", ["В усадьбе Кусково", "В Зарядье", "На Воробьёвых горах"], 0],
+    ["Зачем при строительстве фундаментов временно замораживали грунт?", ["Чтобы он стал твёрдым и не пропускал воду", "Чтобы постоянно охлаждать здания", "Чтобы украсить подземные помещения"], 0],
+  ],
 ] as const;
 
 function mixHighriseQuestion(q: readonly [string, readonly string[], number]) {
@@ -742,6 +767,20 @@ function mixHighriseQuestion(q: readonly [string, readonly string[], number]) {
   }
   return { title: q[0], options: variants.map(v => v.text), answer: variants.findIndex(v => v.right) };
 }
+
+const highriseLessonMedia = highriseLessons.map((_, index) => {
+  if (index < 9) return {
+    src: "./assets/highrise-official.png",
+    alt: "Высотка",
+    label: "ИЗОБРАЖЕНИЕ ДЛЯ УЗНАВАНИЯ",
+    caption: "Как подписать на олимпиаде: «Высотка»",
+  };
+  return [
+    { src: "./assets/highrise-palace.png", alt: "Проект Дворца Советов", label: "ДВОРЕЦ СОВЕТОВ", caption: "Проект здания, которое хотели сделать центром новой Москвы" },
+    { src: "./assets/highrise-decoration.png", alt: "Декоративное оформление московской высотки", label: "ДЕКОРАТИВНОЕ ОФОРМЛЕНИЕ", caption: "Высотки украшали керамикой, скульптурами и лепными деталями" },
+    { src: "./assets/highrise-underground.png", alt: "Временное замораживание грунта при строительстве", label: "ЗАМОРАЖИВАНИЕ ГРУНТА", caption: "Грунт временно укрепляли при устройстве фундамента" },
+  ][index - 9];
+});
 
 function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onMatching: () => void; onNext: () => void }) {
   const [page, setPage] = useState<"plan" | "lesson" | "mini" | "workshop" | "cards" | "final">("plan");
@@ -762,7 +801,7 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
   const q = mixedMini[part][miniI];
   const nextQuestion = () => {
     if (miniI < 4) { setMiniI(miniI + 1); setPick(null); }
-    else if (part < 2) startPart(part + 1);
+    else if (part < 3) startPart(part + 1);
     else jump("workshop");
   };
   const cards = [
@@ -774,6 +813,11 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
     ["Где находится главное здание МГУ?", "Воробьёвы горы"],
     ["На какой площади находится здание МИД?", "Смоленская площадь"],
     ["Как иногда называли жилой дом на Кудринской площади?", "Дом авиаторов"],
+    ["Какое здание планировали сделать центром новой Москвы?", "Дворец Советов"],
+    ["Чей проект Дворца Советов победил в международном конкурсе?", "Бориса Иофана"],
+    ["Из какого лёгкого материала изготовили часть деталей интерьера высоток?", "Из папье-маше"],
+    ["Где граф Шереметев использовал похожую отделку?", "В усадьбе Кусково"],
+    ["Зачем при строительстве фундаментов временно замораживали грунт?", "Чтобы он стал твёрдым и не пропускал воду"],
   ];
   return (
     <main className="compact highrise-module">
@@ -794,20 +838,20 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
             </dl>
           </div>
         </section>
-        <div className="route-rule"><b>Как будем учиться</b><p>Сначала три учебных экрана без обязательных вопросов, затем олимпиадный мини-тур. После трёх частей — олимпиадная мастерская, карточки и итоговая проверка.</p></div>
+        <div className="route-rule"><b>Как будем учиться</b><p>Сначала три учебных экрана без обязательных вопросов, затем олимпиадный мини-тур. После четырёх частей — олимпиадная мастерская, карточки и итоговая проверка.</p></div>
         <div className="part-list">
-          {["Что это и как появилось", "Семь зданий и их назначение", "Инженерные тайны и олимпиадная тренировка"].map((x,i)=><button className="part-row" key={x} onClick={()=>startPart(i)}><span><b>Часть {i+1}. {x}</b><small>3 учебных экрана → 5 заданий</small></span><span>Открыть →</span></button>)}
+          {["Что это и как появилось", "Семь зданий и их назначение", "Инженерные тайны и олимпиадная тренировка", "Замысел, красота и подземные тайны"].map((x,i)=><button className="part-row" key={x} onClick={()=>startPart(i)}><span><b>Часть {i+1}. {x}</b><small>3 учебных экрана → 5 заданий</small></span><span>Открыть →</span></button>)}
           <button className="part-row final-row" onClick={()=>jump("workshop")}><span><b>Олимпиадная мастерская</b><small>Изображение • соответствие • хронология • ошибки • анаграмма • кроссворд</small></span><span>Открыть →</span></button>
           <button className="part-row final-row" onClick={()=>jump("cards")}><span><b>Карточки темы — ответить вслух</b><small>Точные названия, даты и соответствия</small></span><span>Открыть →</span></button>
           <button className="part-row writing-row" onClick={onMatching}><span><b>20 изображений — вписать названия</b><small>Обязательные подписи муниципального и регионального туров</small></span><span>Писать ответы →</span></button>
-          <button className="part-row final-row" onClick={()=>jump("final")}><span><b>Итоговая олимпиадная проверка</b><small>10 вопросов с выбором ответа по материалам трёх мини-туров</small></span><span>Открыть →</span></button>
+          <button className="part-row final-row" onClick={()=>jump("final")}><span><b>Итоговая олимпиадная проверка</b><small>10 вопросов с выбором ответа по материалам четырёх мини-туров</small></span><span>Открыть →</span></button>
         </div>
       </>}
       {page === "lesson" && <>
-        <div className="progress"><span>ВЫСОТКИ • ЧАСТЬ {part+1} ИЗ 3 • ЭКРАН {step%3+1} ИЗ 3</span><div><i style={{width:`${(step+1)/9*100}%`}}/></div></div>
-        <section className="spread"><aside><img src="./assets/highrise-official.png" alt="Высотка"/><small>ИЗОБРАЖЕНИЕ ДЛЯ УЗНАВАНИЯ</small><p>Как подписать на олимпиаде: <strong>«Высотка»</strong></p><div className="part-tag">ЧАСТЬ {part+1}<br/><b>{["Общий замысел","Семь зданий","Инженерные тайны"][part]}</b></div></aside><article><div className="chapter-label">УЧЕБНЫЙ ЭКРАН • СНАЧАЛА ПОЙМИ, ПОТОМ ПРОВЕРЬ</div><h1>{highriseLessons[step].title}</h1><p className="lesson-text">{step === 0 ? highlightFirstHighriseFacts(highriseLessons[step].text) : highlightHighriseFacts(highriseLessons[step].text)}</p><div className="fact-strip"><b>Опорная запись</b><span>{highlightHighriseFacts(highriseLessons[step].fact)}</span></div><div className="lesson-nav"><button className="secondary" disabled={step%3===0} onClick={()=>setStep(step-1)}>← Назад</button>{step%3<2?<button className="primary" onClick={()=>setStep(step+1)}>Следующий экран →</button>:<button className="primary" onClick={beginMini}>Мини-тур: 5 заданий →</button>}</div></article></section>
+        <div className="progress"><span>ВЫСОТКИ • ЧАСТЬ {part+1} ИЗ 4 • ЭКРАН {step%3+1} ИЗ 3</span><div><i style={{width:`${(step+1)/12*100}%`}}/></div></div>
+        <section className="spread"><aside><img src={highriseLessonMedia[step].src} alt={highriseLessonMedia[step].alt}/><small>{highriseLessonMedia[step].label}</small><p>{highlightHighriseFacts(highriseLessonMedia[step].caption)}</p><div className="part-tag">ЧАСТЬ {part+1}<br/><b>{["Общий замысел","Семь зданий","Инженерные тайны","Замысел и архитектура"][part]}</b></div></aside><article><div className="chapter-label">УЧЕБНЫЙ ЭКРАН • СНАЧАЛА ПОЙМИ, ПОТОМ ПРОВЕРЬ</div><h1>{highriseLessons[step].title}</h1><p className="lesson-text">{step === 0 ? highlightFirstHighriseFacts(highriseLessons[step].text) : highlightHighriseFacts(highriseLessons[step].text)}</p><div className="fact-strip"><b>Опорная запись</b><span>{highlightHighriseFacts(highriseLessons[step].fact)}</span></div><div className="lesson-nav"><button className="secondary" disabled={step%3===0} onClick={()=>setStep(step-1)}>← Назад</button>{step%3<2?<button className="primary" onClick={()=>setStep(step+1)}>Следующий экран →</button>:<button className="primary" onClick={beginMini}>Мини-тур: 5 заданий →</button>}</div></article></section>
       </>}
-      {page === "mini" && <section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightHighriseFacts(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>{setPick(i); if(i===q.answer) setScore(score+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===q.answer?"Верно.":<>Неверно. Правильный ответ: {highlightOptionFacts(q.options[q.answer])}.</>}</p><button className="primary" onClick={nextQuestion}>{miniI<4?"Следующее задание →":part<2?"Следующая часть →":"В олимпиадную мастерскую →"}</button></>}</section>}
+      {page === "mini" && <section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightHighriseFacts(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>{setPick(i); if(i===q.answer) setScore(score+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===q.answer?"Верно.":<>Неверно. Правильный ответ: {highlightOptionFacts(q.options[q.answer])}.</>}</p><button className="primary" onClick={nextQuestion}>{miniI<4?"Следующее задание →":part<3?"Следующая часть →":"В олимпиадную мастерскую →"}</button></>}</section>}
       {page === "workshop" && <RouteWorkshop data={highriseWorkshop} onBack={() => jump("plan")} onFinish={() => jump("cards")} />}
       {page === "cards" && <><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Сначала произнеси ответ вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{revealed.includes(i) ? highlightHighriseFacts(c[1]) : <strong style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{highlightHighriseFacts(c[0])}</strong>}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
       {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightHighriseFacts(finalQuestions[finalI].title)}</h1>{finalQuestions[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finalQuestions[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finalQuestions[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finalQuestions[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finalQuestions[finalI].options[finalQuestions[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
