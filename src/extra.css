@@ -1066,6 +1066,51 @@ body,
   border-left: 5px solid #b74335;
   background: #f8f1df;
 }
+
+/* Единые интерактивные состояния без изменения размеров и раскладки. */
+button:not(:disabled),
+a[href],
+select,
+.error-row {
+  cursor: pointer;
+}
+
+button:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+a[href]:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid #b74335;
+  outline-offset: 3px;
+}
+
+.error-row:has(input:focus-visible) {
+  outline: 3px solid #b74335;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):not(.primary):not(.right):not(.wrong):not(.selected):not(.flipped):not(.open):not(.opened):not(.current):not(.active):hover,
+  a[href]:hover,
+  select:not(:disabled):hover,
+  .error-row:hover {
+    background-color: #d9e7e5;
+    border-color: #28536d;
+    outline: 1px solid #28536d;
+    outline-offset: -1px;
+  }
+
+  .primary:not(:disabled):hover,
+  .lab-button:not(:disabled):hover,
+  .matching-actions button:not(.reveal):not(:disabled):hover {
+    background-color: #21475e !important;
+  }
+}
+
 @keyframes balloon-flight {
   0% {
     transform: translateX(0) rotate(0);
