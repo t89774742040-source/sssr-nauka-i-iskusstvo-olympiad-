@@ -1021,6 +1021,7 @@ function App() {
   const [matchingRevealed, setMatchingRevealed] = useState<number[]>([]);
   const [matchingInputs, setMatchingInputs] = useState<string[]>(() => matchingLabels.map(() => ""));
   const [matchingChecked, setMatchingChecked] = useState<(boolean | null)[]>(() => matchingLabels.map(() => null));
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const questions = useMemo(
     () =>
       [...quiz.slice(0, 18)]
@@ -1045,6 +1046,7 @@ function App() {
   const part = Math.floor(step / 3);
   const screen = step % 3;
   const go = (v: View) => {
+    setMobileMenuOpen(false);
     setView(v);
     scrollTo(0, 0);
   };
@@ -1103,7 +1105,17 @@ function App() {
         <button className="brand" onClick={() => go("home")}>
           <span>★</span> НАШЕ НАСЛЕДИЕ
         </button>
-        <nav>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-expanded={mobileMenuOpen}
+          aria-controls="main-navigation"
+          aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
+          onClick={() => setMobileMenuOpen(open => !open)}
+        >
+          {mobileMenuOpen ? "×" : "☰"}
+        </button>
+        <nav id="main-navigation" className={mobileMenuOpen ? "open" : ""}>
           <button onClick={() => go("home")}>Маршруты</button>
           <button onClick={() => go("cards")}>Карточки</button>
           <button onClick={() => go("finale")}>Проверка</button>

@@ -1368,3 +1368,68 @@ input:focus-visible {
     object-fit: contain !important;
   }
 }
+
+/* Мобильная шапка: компактная строка и раскрывающееся меню. */
+.menu-toggle {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  header {
+    height: 72px !important;
+    min-height: 72px;
+    padding: 0 16px !important;
+    align-items: center !important;
+  }
+
+  header .brand {
+    min-width: 0;
+    padding: 0;
+    white-space: nowrap;
+    font-size: clamp(13px, 4.2vw, 16px);
+    letter-spacing: clamp(.5px, .35vw, 1.5px);
+  }
+
+  header .brand span {
+    margin-right: 5px;
+  }
+
+  .menu-toggle {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    padding: 0;
+    place-items: center;
+    color: #28536d;
+    border: 2px solid #28536d;
+    background: #f8f1df;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  header nav {
+    display: none;
+    position: absolute;
+    top: calc(100% + 2px);
+    right: 16px;
+    width: min(250px, calc(100vw - 32px));
+    padding: 8px;
+    gap: 0;
+    background: #f8f1df;
+    border: 2px solid #263d3b;
+    box-shadow: 6px 6px 0 #28536d;
+  }
+
+  header nav.open {
+    display: flex;
+    flex-direction: column;
+  }
+
+  header nav button {
+    width: 100%;
+    padding: 13px 14px;
+    text-align: left;
+    white-space: normal;
+  }
+}
