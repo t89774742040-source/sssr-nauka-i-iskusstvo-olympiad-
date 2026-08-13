@@ -149,6 +149,10 @@ export default function StarsRoute({ onBack, onMatching, onNext }: { onBack: () 
   const [step, setStep] = useState(0);
   const [miniIndex, setMiniIndex] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
+  const [miniFirstTry, setMiniFirstTry] = useState(0);
+  const [miniWrongAttempts, setMiniWrongAttempts] = useState(0);
+  const [miniWrongChoices, setMiniWrongChoices] = useState<number[]>([]);
+  const [miniDone, setMiniDone] = useState(false);
   const [revealed, setRevealed] = useState<number[]>([]);
   const [finalIndex, setFinalIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
@@ -162,13 +166,27 @@ export default function StarsRoute({ onBack, onMatching, onNext }: { onBack: () 
 
   const jump = (next: Page) => { setPage(next); setPick(null); window.scrollTo(0, 0); };
   const startPart = (index: number) => { setPart(index); setStep(index * 3); jump("lesson"); };
-  const startMini = () => { setMiniIndex(0); setPick(null); jump("mini"); };
+  const resetMini = () => { setMiniIndex(0); setMiniFirstTry(0); setMiniWrongAttempts(0); setMiniWrongChoices([]); setMiniDone(false); setPick(null); };
+  const startMini = () => { resetMini(); jump("mini"); };
   const currentMini = mixedMiniTours[part][miniIndex];
-  const nextMini = () => {
-    if (miniIndex < 4) { setMiniIndex(miniIndex + 1); setPick(null); return; }
-    if (part < 2) { startPart(part + 1); return; }
-    jump("workshop");
+  const chooseMiniAnswer = (index: number) => {
+    if (pick === currentMini.answer) return;
+    setPick(index);
+    if (index === currentMini.answer) {
+      if (miniWrongChoices.length === 0) setMiniFirstTry(value => value + 1);
+      return;
+    }
+    if (!miniWrongChoices.includes(index)) {
+      setMiniWrongChoices(choices => [...choices, index]);
+      setMiniWrongAttempts(value => value + 1);
+    }
   };
+  const nextMini = () => {
+    if (pick !== currentMini.answer) return;
+    if (miniIndex < 4) { setMiniIndex(miniIndex + 1); setMiniWrongChoices([]); setPick(null); return; }
+    setMiniDone(true);
+  };
+  const continueAfterMini = () => { if (part < 2) startPart(part + 1); else jump("workshop"); };
 
   return <main className="compact highrise-module route-start stars-module">
     <button className="back" onClick={page === "plan" ? onBack : () => jump("plan")}>← {page === "plan" ? "Карта тем" : "План темы"}</button>
@@ -202,7 +220,7 @@ export default function StarsRoute({ onBack, onMatching, onNext }: { onBack: () 
       <div className="progress"><span>ЛЕТАЮЩИЕ ЗВЁЗДЫ • ЧАСТЬ {part + 1} ИЗ 3 • ЭКРАН {step % 3 + 1} ИЗ 3</span><div><i style={{ width: `${(step + 1) / 9 * 100}%` }} /></div></div>
       <section className="spread"><aside><img src={`./assets/${lessonMedia[step][0]}`} alt={lessonMedia[step][1]} /><small>ИЛЛЮСТРАЦИЯ ИЗ КНИГИ МАРШРУТА</small><p><strong>{lessonMedia[step][1]}</strong></p><div className="part-tag">ЧАСТЬ {part + 1}<br /><b>{["Первый спутник", "Путь к человеку", "Полёт и работа"][part]}</b></div></aside><article><div className="chapter-label">УЧЕБНЫЙ ЭКРАН • СНАЧАЛА ПОЙМИ, ПОТОМ ПРОВЕРЬ</div><h1>{lessons[step].title}</h1><p className="lesson-text">{mark(lessons[step].text)}</p><div className="fact-strip"><b>Опорная запись</b><span>{mark(lessons[step].fact)}</span></div><div className="lesson-nav"><button className="secondary" disabled={step % 3 === 0} onClick={() => setStep(step - 1)}>← Назад</button>{step % 3 < 2 ? <button className="primary" onClick={() => setStep(step + 1)}>Следующий экран →</button> : <button className="primary" onClick={startMini}>Мини-тур: 5 заданий →</button>}</div></article></section>
     </>}
-    {page === "mini" && <section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part + 1} • {miniIndex + 1} ИЗ 5</span><h1>{currentMini.title}</h1>{currentMini.options.map((option, index) => <button key={option} disabled={pick !== null} className={pick === index ? (index === currentMini.answer ? "right" : "wrong") : ""} onClick={() => setPick(index)}>{option}</button>)}{pick !== null && <><p className="explain">{pick === currentMini.answer ? "Верно." : <>Неверно. Правильный ответ: {currentMini.options[currentMini.answer]}.</>}</p><button className="primary" onClick={nextMini}>{miniIndex < 4 ? "Следующее задание →" : part < 2 ? "Следующая часть →" : "В олимпиадную мастерскую →"}</button></>}</section>}
+    {page === "mini" && <section className="quiz">{miniDone ? <><h1>Мини-тур завершён!</h1><p><strong>Без ошибок: {miniFirstTry} из 5</strong></p><p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p><div className="task-actions"><button className="primary" onClick={resetMini}>Повторить мини-тур</button><button className="primary" onClick={continueAfterMini}>Продолжить маршрут</button></div></> : <><span>МИНИ-ТУР • ЧАСТЬ {part + 1} • {miniIndex + 1} ИЗ 5</span><h1>{currentMini.title}</h1>{currentMini.options.map((option, index) => <button key={option} disabled={pick === currentMini.answer} className={pick === index ? (index === currentMini.answer ? "right" : "wrong") : ""} onClick={() => chooseMiniAnswer(index)}>{option}</button>)}{pick !== null && <p className="explain">{pick === currentMini.answer ? "Верно!" : "Пока неверно. Попробуй ещё раз"}</p>}{pick === currentMini.answer && <button className="primary" onClick={nextMini}>{miniIndex < 4 ? "Следующее задание →" : "Завершить мини-тур →"}</button>}</>}</section>}
     {page === "workshop" && <RouteWorkshop data={workshopData} onBack={() => jump("plan")} onFinish={() => jump("cards")} />}
     {page === "cards" && <><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Сначала произнеси ответ вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((card, index) => <button className={revealed.includes(index) ? "memory flipped" : "memory"} key={card[0]} onClick={() => setRevealed(revealed.includes(index) ? revealed.filter(item => item !== index) : [...revealed, index])}><span>{revealed.includes(index) ? card[1] : card[0]}</span><small>{revealed.includes(index) ? "Ответ" : "Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={() => jump("final")}>Итоговая проверка →</button></>}
     {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalIndex + 1, 10)} ИЗ 10</span>{finalIndex < 10 ? <><h1>{finalSet[finalIndex].title}</h1>{finalSet[finalIndex].options.map((option, index) => <button key={option} disabled={pick !== null} className={pick === index ? (index === finalSet[finalIndex].answer ? "right" : "wrong") : ""} onClick={() => { setPick(index); if (index === finalSet[finalIndex].answer) setFinalScore(finalScore + 1); }}>{option}</button>)}{pick !== null && <><p className="explain">{pick === finalSet[finalIndex].answer ? "Верно." : <>Правильный ответ: {finalSet[finalIndex].options[finalSet[finalIndex].answer]}.</>}</p><button className="primary" onClick={() => { setFinalIndex(finalIndex + 1); setPick(null); }}>{finalIndex < 9 ? "Следующее задание →" : "Узнать результат →"}</button></>}</> : <><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore === 10 ? "МОЛОДЕЦ" : "Есть ошибки"}</h1><p>{finalScore === 10 ? "Все задания выполнены верно. Можно переходить к следующему маршруту." : "Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore === 10 ? <button className="primary" onClick={onNext}>Следующий маршрут →</button> : <div className="task-actions"><button className="primary" onClick={() => { setFinalIndex(0); setFinalScore(0); setPick(null); setTestVersion(testVersion + 1); }}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}

@@ -792,6 +792,9 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
   const [miniI, setMiniI] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
   const [score, setScore] = useState(0);
+  const [miniWrongAttempts, setMiniWrongAttempts] = useState(0);
+  const [miniWrongChoices, setMiniWrongChoices] = useState<number[]>([]);
+  const [miniDone, setMiniDone] = useState(false);
   const [finalI, setFinalI] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const [revealed, setRevealed] = useState<number[]>([]);
@@ -801,13 +804,27 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
   const part = Math.floor(step / 3);
   const jump = (next: typeof page) => { setPage(next); setPick(null); scrollTo(0, 0); };
   const startPart = (n: number) => { setStep(n * 3); jump("lesson"); };
-  const beginMini = () => { setMiniI(0); setScore(0); setPick(null); jump("mini"); };
+  const resetMini = () => { setMiniI(0); setScore(0); setMiniWrongAttempts(0); setMiniWrongChoices([]); setMiniDone(false); setPick(null); };
+  const beginMini = () => { resetMini(); jump("mini"); };
   const q = mixedMini[part][miniI];
-  const nextQuestion = () => {
-    if (miniI < 4) { setMiniI(miniI + 1); setPick(null); }
-    else if (part < 3) startPart(part + 1);
-    else jump("workshop");
+  const chooseMiniAnswer = (index: number) => {
+    if (pick === q.answer) return;
+    setPick(index);
+    if (index === q.answer) {
+      if (miniWrongChoices.length === 0) setScore(value => value + 1);
+      return;
+    }
+    if (!miniWrongChoices.includes(index)) {
+      setMiniWrongChoices(choices => [...choices, index]);
+      setMiniWrongAttempts(value => value + 1);
+    }
   };
+  const nextQuestion = () => {
+    if (pick !== q.answer) return;
+    if (miniI < 4) { setMiniI(miniI + 1); setMiniWrongChoices([]); setPick(null); }
+    else setMiniDone(true);
+  };
+  const continueAfterMini = () => { if (part < 3) startPart(part + 1); else jump("workshop"); };
   const cards = [
     ["Как нужно подписать изображение московской высотки в Приложении 1 к программе олимпиады?", "Высотка"],
     ["В каком году к 800-летию Москвы заложили первые камни в основания восьми высотных зданий?", "1947 год"],
@@ -855,7 +872,7 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
         <div className="progress"><span>ВЫСОТКИ • ЧАСТЬ {part+1} ИЗ 4 • ЭКРАН {step%3+1} ИЗ 3</span><div><i style={{width:`${(step+1)/12*100}%`}}/></div></div>
         <section className="spread"><aside><img src={highriseLessonMedia[step].src} alt={highriseLessonMedia[step].alt}/><small>{highriseLessonMedia[step].label}</small><p>{highlightHighriseFacts(highriseLessonMedia[step].caption)}</p><div className="part-tag">ЧАСТЬ {part+1}<br/><b>{["Замысел высотной Москвы","Семь зданий","Жилые здания и инженерия","Проектирование и строительство"][part]}</b></div></aside><article><div className="chapter-label">УЧЕБНЫЙ ЭКРАН • СНАЧАЛА ПОЙМИ, ПОТОМ ПРОВЕРЬ</div><h1>{orderedHighriseLessons[step].title}</h1><p className="lesson-text">{step === 0 ? highlightFirstHighriseFacts(orderedHighriseLessons[step].text) : highlightHighriseFacts(orderedHighriseLessons[step].text)}</p><div className="fact-strip"><b>Опорная запись</b><span>{highlightHighriseFacts(orderedHighriseLessons[step].fact)}</span></div><div className="lesson-nav"><button className="secondary" disabled={step%3===0} onClick={()=>setStep(step-1)}>← Назад</button>{step%3<2?<button className="primary" onClick={()=>setStep(step+1)}>Следующий экран →</button>:<button className="primary" onClick={beginMini}>Мини-тур: 5 заданий →</button>}</div></article></section>
       </>}
-      {page === "mini" && <section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightHighriseFacts(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>{setPick(i); if(i===q.answer) setScore(score+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===q.answer?"Верно.":<>Неверно. Правильный ответ: {highlightOptionFacts(q.options[q.answer])}.</>}</p><button className="primary" onClick={nextQuestion}>{miniI<4?"Следующее задание →":part<3?"Следующая часть →":"В олимпиадную мастерскую →"}</button></>}</section>}
+      {page === "mini" && <section className="quiz">{miniDone ? <><h1>Мини-тур завершён!</h1><p><strong>Без ошибок: {score} из 5</strong></p><p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p><div className="task-actions"><button className="primary" onClick={resetMini}>Повторить мини-тур</button><button className="primary" onClick={continueAfterMini}>Продолжить маршрут</button></div></> : <><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightHighriseFacts(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick===q.answer} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>chooseMiniAnswer(i)}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<p className="explain">{pick===q.answer?"Верно!":"Пока неверно. Попробуй ещё раз"}</p>}{pick===q.answer&&<button className="primary" onClick={nextQuestion}>{miniI<4?"Следующее задание →":"Завершить мини-тур →"}</button>}</>}</section>}
       {page === "workshop" && <RouteWorkshop data={highriseWorkshop} onBack={() => jump("plan")} onFinish={() => jump("cards")} />}
       {page === "cards" && <><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Сначала произнеси ответ вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{revealed.includes(i) ? highlightHighriseFacts(c[1]) : <strong style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{highlightHighriseFacts(c[0])}</strong>}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
       {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightHighriseFacts(finalQuestions[finalI].title)}</h1>{finalQuestions[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finalQuestions[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finalQuestions[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finalQuestions[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finalQuestions[finalI].options[finalQuestions[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
@@ -968,6 +985,7 @@ const vdnhLessonMedia = vdnhLessons.map((_, index) => {
 function VdnhRoute({onBack,onMatching,onNext}:{onBack:()=>void;onMatching:()=>void;onNext:()=>void}){
   const [page,setPage]=useState<"plan"|"lesson"|"mini"|"workshop"|"cards"|"final">("plan");
   const [step,setStep]=useState(0),[miniI,setMiniI]=useState(0),[pick,setPick]=useState<number|null>(null),[score,setScore]=useState(0),[finalI,setFinalI]=useState(0),[finalScore,setFinalScore]=useState(0);
+  const [miniWrongAttempts,setMiniWrongAttempts]=useState(0),[miniWrongChoices,setMiniWrongChoices]=useState<number[]>([]),[miniDone,setMiniDone]=useState(false);
   const [revealed,setRevealed]=useState<number[]>([]);
   const [testVersion,setTestVersion]=useState(0);
   const mixed=useMemo(()=>vdnhMini.map(block=>block.map(mixHighriseQuestion)),[]);
@@ -975,14 +993,17 @@ function VdnhRoute({onBack,onMatching,onNext}:{onBack:()=>void;onMatching:()=>vo
   const part=Math.floor(step/3),q=mixed[part][miniI];
   const jump=(p:typeof page)=>{setPage(p);setPick(null);scrollTo(0,0)};
   const startPart=(n:number)=>{setStep(n*3);jump("lesson")};
-  const startMini=()=>{setMiniI(0);setScore(0);setPick(null);jump("mini")};
-  const nextMini=()=>{if(miniI<4){setMiniI(miniI+1);setPick(null)}else if(part<3)startPart(part+1);else jump("workshop")};
+  const resetMini=()=>{setMiniI(0);setScore(0);setMiniWrongAttempts(0);setMiniWrongChoices([]);setMiniDone(false);setPick(null)};
+  const startMini=()=>{resetMini();jump("mini")};
+  const chooseMiniAnswer=(index:number)=>{if(pick===q.answer)return;setPick(index);if(index===q.answer){if(miniWrongChoices.length===0)setScore(value=>value+1);return}if(!miniWrongChoices.includes(index)){setMiniWrongChoices(choices=>[...choices,index]);setMiniWrongAttempts(value=>value+1)}};
+  const nextMini=()=>{if(pick!==q.answer)return;if(miniI<4){setMiniI(miniI+1);setMiniWrongChoices([]);setPick(null)}else setMiniDone(true)};
+  const continueAfterMini=()=>{if(part<3)startPart(part+1);else jump("workshop")};
   const cards=[["Как расшифровывается сокращение ВДНХ?","Выставка достижений народного хозяйства"],["Когда впервые открылась Всесоюзная сельскохозяйственная выставка?","1 августа 1939 года"],["Как сокращённо называлась выставка при первом открытии?","ВСХВ"],["В каком году выставка снова открылась после войны?","1954 год"],["Кто создал скульптуру «Рабочий и колхозница»?","Вера Мухина"],["Какова высота Главного павильона?","90 метров"],["Сколько девушек окружает фонтан «Дружба народов» и что они символизировали?","16 девушек — республики СССР"],["Как нужно подписать в Приложении 1 к программе олимпиады изображение монумента «Рабочий и колхозница» на фоне павильона?","ВДНХ"],["Как первоначально назывался павильон «Космос»?","«Механизация»"],["Для какой международной выставки построили павильон «Москва»?","Для Всемирной выставки 1967 года в Монреале"],["Как располагались экраны в кинотеатре «Круговая кинопанорама»?","По кругу в два ряда"],["Что представлял собой Зелёный театр?","Концертный зал под открытым небом"]];
   return <main className="compact highrise-module vdnh-module">
     <button className="back" onClick={page==="plan"?onBack:()=>jump("plan")}>← {page==="plan"?"Карта тем":"План темы"}</button>
     {page==="plan"&&<><div className="label">ТЕМА • ВДНХ</div><section className="route-cover"><figure className="vdnh-cover-image"><img src="./assets/card-vdnh.png" alt="ВДНХ — официальное изображение из приложения к олимпиаде"/><figcaption>скульптурная композиция <strong>«Рабочий и колхозница»</strong></figcaption></figure><div><span>АРХИТЕКТУРА • НАУКА • ИСКУССТВО</span><h1>ВДНХ</h1><p><strong>ВДНХ — Выставка достижений народного хозяйства</strong>, главная выставка страны. Здесь показывали достижения <strong>Советского Союза</strong>. Сначала посетителям представляли новые растения, лучшие урожаи и домашних животных-рекордсменов. Позднее на выставке появились достижения науки и промышленности.</p><dl><div><dt>Первое открытие</dt><dd><strong className="date-value">1 августа 1939 года</strong></dd></div><div><dt>Первое название</dt><dd><strong>ВСХВ — Всесоюзная сельскохозяйственная выставка</strong>.</dd></div><div className="architects"><dt>Главные объекты книги</dt><dd><strong>Главный павильон</strong>, который сейчас называют Центральным; скульптурная композиция <strong>«Рабочий и колхозница»</strong>; фонтаны <strong>«Дружба народов»</strong>, <strong>«Каменный цветок»</strong> и <strong>«Золотой колос»</strong></dd></div><div className="architects"><dt>Источник школьного тура</dt><dd>книга <strong>«ВДНХ»</strong> Наталии и Василия Волковых</dd></div></dl></div></section><div className="route-rule"><b>Как будем учиться</b><p>Три учебных экрана → пять олимпиадных заданий. После четырёх частей — олимпиадная мастерская, карточки и итоговая проверка.</p></div><div className="part-list">{["История и названия","Павильоны и символы","Три знаменитых фонтана","Наука, техника и отдых"].map((x,i)=><button className="part-row" key={x} onClick={()=>startPart(i)}><span><b>Часть {i+1}. {x}</b><small>3 учебных экрана → 5 заданий</small></span><span>Открыть →</span></button>)}<button className="part-row final-row" onClick={()=>jump("workshop")}><span><b>Олимпиадная мастерская</b><small>Изображение • соответствие • хронология • ошибки • анаграмма • кроссворд</small></span><span>Открыть →</span></button><button className="part-row final-row" onClick={()=>jump("cards")}><span><b>Карточки темы — ответить вслух</b><small>Даты, названия, авторы и объекты</small></span><span>Открыть →</span></button><button className="part-row writing-row" onClick={onMatching}><span><b>20 изображений — вписать названия</b><small>Обязательные подписи муниципального и регионального туров</small></span><span>Писать ответы →</span></button><button className="part-row final-row" onClick={()=>jump("final")}><span><b>Итоговая олимпиадная проверка</b><small>10 вопросов с выбором ответа по материалам четырёх мини-туров</small></span><span>Открыть →</span></button></div></>}
     {page==="lesson"&&<><div className="progress"><span>ВДНХ • ЧАСТЬ {part+1} ИЗ 4 • ЭКРАН {step%3+1} ИЗ 3</span><div><i style={{width:`${(step+1)/12*100}%`}}/></div></div><section className="spread"><aside><img src={vdnhLessonMedia[step].src} alt={vdnhLessonMedia[step].alt}/><small>{vdnhLessonMedia[step].label}</small><p>{vdnhLessonMedia[step].caption}</p><div className="part-tag">ЧАСТЬ {part+1}<br/><b>{["История","Архитектура","Фонтаны","Наука и отдых"][part]}</b></div></aside><article><div className="chapter-label">УЧЕБНЫЙ ЭКРАН • СНАЧАЛА ПОЙМИ, ПОТОМ ПРОВЕРЬ</div><h1>{highlightVdnh(vdnhLessons[step].title)}</h1><p className="lesson-text">{highlightVdnhLesson(vdnhLessons[step].text,step)}</p><div className="fact-strip"><b>Опорная запись</b><span>{highlightVdnh(vdnhLessons[step].fact)}</span></div><div className="lesson-nav"><button className="secondary" disabled={step%3===0} onClick={()=>setStep(step-1)}>← Назад</button>{step%3<2?<button className="primary" onClick={()=>setStep(step+1)}>Следующий экран →</button>:<button className="primary" onClick={startMini}>Мини-тур: 5 заданий →</button>}</div></article></section></>}
-    {page==="mini"&&<section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightVdnh(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===q.answer)setScore(score+1)}}>{highlightVdnhSculptorOption(a,q.title==="Кто создал скульптуру «Рабочий и колхозница»?",q.title==="С чьими сказками связан замысел фонтана «Каменный цветок»?")}</button>)}{pick!==null&&<><p className="explain">{pick===q.answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(q.options[q.answer])}.</>}</p><button className="primary" onClick={nextMini}>{miniI<4?"Следующее задание →":part<3?"Следующая часть →":"В олимпиадную мастерскую →"}</button></>}</section>}
+    {page==="mini"&&<section className="quiz">{miniDone?<><h1>Мини-тур завершён!</h1><p><strong>Без ошибок: {score} из 5</strong></p><p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p><div className="task-actions"><button className="primary" onClick={resetMini}>Повторить мини-тур</button><button className="primary" onClick={continueAfterMini}>Продолжить маршрут</button></div></>:<><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightVdnh(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick===q.answer} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>chooseMiniAnswer(i)}>{highlightVdnhSculptorOption(a,q.title==="Кто создал скульптуру «Рабочий и колхозница»?",q.title==="С чьими сказками связан замысел фонтана «Каменный цветок»?")}</button>)}{pick!==null&&<p className="explain">{pick===q.answer?"Верно!":"Пока неверно. Попробуй ещё раз"}</p>}{pick===q.answer&&<button className="primary" onClick={nextMini}>{miniI<4?"Следующее задание →":"Завершить мини-тур →"}</button>}</>}</section>}
     {page==="workshop"&&<RouteWorkshop data={vdnhWorkshop} onBack={()=>jump("plan")} onFinish={()=>jump("cards")}/>} 
     {page==="cards"&&<><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Ответь вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{highlightVdnh(revealed.includes(i)?c[1]:c[0])}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
     {page==="final"&&<section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightVdnh(finals[finalI].title)}</h1>{finals[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finals[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finals[finalI].answer)setFinalScore(finalScore+1)}}>{highlightVdnhSculptorOption(a,finals[finalI].title==="Кто создал скульптуру «Рабочий и колхозница»?",false)}</button>)}{pick!==null&&<><p className="explain">{pick===finals[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finals[finalI].options[finals[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
@@ -1019,6 +1040,8 @@ function App() {
   const [miniIndex, setMiniIndex] = useState(0),
     [miniScore, setMiniScore] = useState(0),
     [miniPick, setMiniPick] = useState<number | null>(null);
+  const [miniWrongAttempts, setMiniWrongAttempts] = useState(0);
+  const [miniWrongChoices, setMiniWrongChoices] = useState<number[]>([]);
   const part = Math.floor(step / 3);
   const screen = step % 3;
   const go = (v: View) => {
@@ -1038,14 +1061,37 @@ function App() {
     localStorage.setItem("ovio-step", String(n));
     scrollTo(0, 0);
   };
-  const openMini = () => {
+  const resetTsiolkovskyMini = () => {
     setMiniIndex(0);
     setMiniScore(0);
+    setMiniWrongAttempts(0);
+    setMiniWrongChoices([]);
     setMiniPick(null);
+  };
+  const openMini = () => {
+    resetTsiolkovskyMini();
     go("mini");
   };
   const miniQuestion = miniQuestions[part][miniIndex];
-  const finishMini = () => {
+  const chooseTsiolkovskyMiniAnswer = (index: number) => {
+    if (miniPick === miniQuestion[2]) return;
+    setMiniPick(index);
+    if (index === miniQuestion[2]) {
+      if (miniWrongChoices.length === 0) setMiniScore(value => value + 1);
+      return;
+    }
+    if (!miniWrongChoices.includes(index)) {
+      setMiniWrongChoices(choices => [...choices, index]);
+      setMiniWrongAttempts(value => value + 1);
+    }
+  };
+  const nextTsiolkovskyMini = () => {
+    if (miniPick !== miniQuestion[2]) return;
+    setMiniIndex(miniIndex + 1);
+    setMiniWrongChoices([]);
+    setMiniPick(null);
+  };
+  const continueAfterTsiolkovskyMini = () => {
     if (part < 2) {
       openStep((part + 1) * 3);
       go("lesson");
@@ -1348,69 +1394,42 @@ function App() {
                 {miniQuestion[1].map((o, i) => (
                   <button
                     key={o}
-                    disabled={miniPick !== null}
+                    disabled={miniPick === miniQuestion[2]}
                     className={
                       miniPick === null
                         ? ""
-                        : i === miniQuestion[2]
-                          ? "right"
-                          : miniPick === i
-                            ? "wrong"
-                            : ""
+                        : miniPick === i
+                          ? i === miniQuestion[2]
+                            ? "right"
+                            : "wrong"
+                          : ""
                     }
-                    onClick={() => {
-                      setMiniPick(i);
-                      if (i === miniQuestion[2]) setMiniScore(miniScore + 1);
-                    }}
+                    onClick={() => chooseTsiolkovskyMiniAnswer(i)}
                   >
                     {o}
                   </button>
                 ))}
-                {miniPick !== null && (
+                {miniPick !== null && <p className="explain">{miniPick === miniQuestion[2] ? "Верно!" : "Пока неверно. Попробуй ещё раз"}</p>}
+                {miniPick === miniQuestion[2] && (
                   <button
                     className="primary"
-                    onClick={() => {
-                      setMiniIndex(miniIndex + 1);
-                      setMiniPick(null);
-                    }}
+                    onClick={nextTsiolkovskyMini}
                   >
-                    Следующее задание →
+                    {miniIndex < 4 ? "Следующее задание →" : "Завершить мини-тур →"}
                   </button>
                 )}
               </>
             ) : (
               <>
-                <div className="result">
-                  {miniScore}
-                  <small>из 5</small>
-                </div>
-                <h1>
-                  {miniScore >= 4
-                    ? "Часть освоена!"
-                    : "Нужно ещё одно повторение"}
-                </h1>
-                <p>
-                  {miniScore >= 4
-                    ? "Можно двигаться дальше."
-                    : "Для олимпиадной готовности желательно набрать 4 или 5."}
-                </p>
-                <button
-                  className="primary"
-                  onClick={
-                    miniScore >= 4
-                      ? finishMini
-                      : () => {
-                          setMiniIndex(0);
-                          setMiniScore(0);
-                        }
-                  }
-                >
-                  {miniScore >= 4
-                    ? part < 2
-                      ? "Перейти к следующей части →"
-                      : "В олимпиадную мастерскую →"
-                    : "Повторить мини-тур"}
-                </button>
+                <>
+                  <h1>Мини-тур завершён!</h1>
+                  <p><strong>Без ошибок: {miniScore} из 5</strong></p>
+                  <p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p>
+                  <div className="task-actions">
+                    <button className="primary" onClick={resetTsiolkovskyMini}>Повторить мини-тур</button>
+                    <button className="primary" onClick={continueAfterTsiolkovskyMini}>Продолжить маршрут</button>
+                  </div>
+                </>
               </>
             )}
           </section>

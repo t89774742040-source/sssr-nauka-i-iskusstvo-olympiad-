@@ -159,6 +159,10 @@ export default function SatsRoute({ onBack, onMatching, onNext }: { onBack: () =
   const [step, setStep] = useState(0);
   const [miniIndex, setMiniIndex] = useState(0);
   const [pick, setPick] = useState<number | null>(null);
+  const [miniFirstTry, setMiniFirstTry] = useState(0);
+  const [miniWrongAttempts, setMiniWrongAttempts] = useState(0);
+  const [miniWrongChoices, setMiniWrongChoices] = useState<number[]>([]);
+  const [miniDone, setMiniDone] = useState(false);
   const [revealed, setRevealed] = useState<number[]>([]);
   const [finalIndex, setFinalIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
@@ -172,14 +176,28 @@ export default function SatsRoute({ onBack, onMatching, onNext }: { onBack: () =
 
   const jump = (next: Page) => { setPage(next); setPick(null); window.scrollTo(0, 0); };
   const startPart = (index: number) => { setPart(index); setStep(index * 3); jump("lesson"); };
-  const startMini = () => { setMiniIndex(0); setPick(null); jump("mini"); };
+  const resetMini = () => { setMiniIndex(0); setMiniFirstTry(0); setMiniWrongAttempts(0); setMiniWrongChoices([]); setMiniDone(false); setPick(null); };
+  const startMini = () => { resetMini(); jump("mini"); };
   const currentMini = mixedMiniTours[part][miniIndex];
+  const chooseMiniAnswer = (index: number) => {
+    if (pick === currentMini.answer) return;
+    setPick(index);
+    if (index === currentMini.answer) {
+      if (miniWrongChoices.length === 0) setMiniFirstTry(value => value + 1);
+      return;
+    }
+    if (!miniWrongChoices.includes(index)) {
+      setMiniWrongChoices(choices => [...choices, index]);
+      setMiniWrongAttempts(value => value + 1);
+    }
+  };
 
   const nextMini = () => {
-    if (miniIndex < 4) { setMiniIndex(miniIndex + 1); setPick(null); return; }
-    if (part < 2) { startPart(part + 1); return; }
-    jump("workshop");
+    if (pick !== currentMini.answer) return;
+    if (miniIndex < 4) { setMiniIndex(miniIndex + 1); setMiniWrongChoices([]); setPick(null); return; }
+    setMiniDone(true);
   };
+  const continueAfterMini = () => { if (part < 2) startPart(part + 1); else jump("workshop"); };
 
   return <main className="compact highrise-module route-start sats-module">
     <button className="back" onClick={page === "plan" ? onBack : () => jump("plan")}>← {page === "plan" ? "Карта тем" : "План темы"}</button>
@@ -219,7 +237,7 @@ export default function SatsRoute({ onBack, onMatching, onNext }: { onBack: () =
       </section>
     </>}
 
-    {page === "mini" && <section className="quiz"><span>МИНИ-ТУР • ЧАСТЬ {part + 1} • {miniIndex + 1} ИЗ 5</span><h1>{currentMini.title}</h1>{currentMini.options.map((option, index) => <button key={option} disabled={pick !== null} className={pick === index ? (index === currentMini.answer ? "right" : "wrong") : ""} onClick={() => setPick(index)}>{option}</button>)}{pick !== null && <><p className="explain">{pick === currentMini.answer ? "Верно." : <>Неверно. Правильный ответ: {currentMini.options[currentMini.answer]}.</>}</p><button className="primary" onClick={nextMini}>{miniIndex < 4 ? "Следующее задание →" : part < 2 ? "Следующая часть →" : "В олимпиадную мастерскую →"}</button></>}</section>}
+    {page === "mini" && <section className="quiz">{miniDone ? <><h1>Мини-тур завершён!</h1><p><strong>Без ошибок: {miniFirstTry} из 5</strong></p><p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p><div className="task-actions"><button className="primary" onClick={resetMini}>Повторить мини-тур</button><button className="primary" onClick={continueAfterMini}>Продолжить маршрут</button></div></> : <><span>МИНИ-ТУР • ЧАСТЬ {part + 1} • {miniIndex + 1} ИЗ 5</span><h1>{currentMini.title}</h1>{currentMini.options.map((option, index) => <button key={option} disabled={pick === currentMini.answer} className={pick === index ? (index === currentMini.answer ? "right" : "wrong") : ""} onClick={() => chooseMiniAnswer(index)}>{option}</button>)}{pick !== null && <p className="explain">{pick === currentMini.answer ? "Верно!" : "Пока неверно. Попробуй ещё раз"}</p>}{pick === currentMini.answer && <button className="primary" onClick={nextMini}>{miniIndex < 4 ? "Следующее задание →" : "Завершить мини-тур →"}</button>}</>}</section>}
 
     {page === "workshop" && <RouteWorkshop data={workshopData} onBack={() => jump("plan")} onFinish={() => jump("cards")} />}
 
