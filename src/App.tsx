@@ -1103,7 +1103,7 @@ function App() {
     <div>
       <header>
         <button className="brand" onClick={() => go("home")}>
-          <span>★</span> НАШЕ НАСЛЕДИЕ
+          <img className="brand-icon" src="/icon-192.png" alt="" aria-hidden="true" /> НАШЕ НАСЛЕДИЕ
         </button>
         <button
           className="menu-toggle"
