@@ -172,6 +172,8 @@ const workshopData: WorkshopData = {
   errorStatements: ["В октябре 1918 года открылся Первый детский театр Моссовета.", "Наталия Сац была архитектором московских высоток.", "В ноябре 1945 года Сац открыла детский театр в Алма-Ате.", "21 ноября 1965 года Сац открыла первый детский планетарий."], errorIndexes: [1, 3],
   anagramPrompt: "Составь слово из перемешанных букв.", anagramLetters: "Р • Т • Е • А • Т", anagramAnswer: "театр",
   crossword: [["Фамилия создателя театра для детей", "САЦ"], ["Опера, открывшая театр в 1965 году", "МОРОЗКО"], ["Город, где театр открылся в 1945 году", "АЛМА-АТА"], ["Какого цвета птица — символ мечты и счастья?", "СИНЯЯ"]],
+  allowBackNavigation: true,
+  individualCrosswordFeedback: true,
 };
 
 const important = /(Наталия Ильинична Сац|Наталия Сац|Илья Сац|Анна Щастная|Синяя птица|начале XX века|один год|девять лет|Софья Халютина|Евгений Вахтангов|1917 году|1823|вступительного слова|1918 года|1921 году|семнадцать|1931 году|1932 году|Джузеппе Верди|«Фальстаф»|Вольфганга Амадея Моцарта|«Свадьба Фигаро»|1936 году|Центральный детский театр|«Золотой ключик»|Алексей Толстой|Сергей Прокофьев|«Петя и волк»|1937 году|«Драмджаз»|«Чио-Чио-сан»|1945 года|1958 году|детский отдел Мосэстрады|21 ноября 1965 года|Московского театра эстрады|1979 году|1993 году|Первый детский театр Моссовета|Детский музыкальный театр)/g;
@@ -209,6 +211,7 @@ export default function SatsRoute({ onBack, onMatching, onNext }: { onBack: () =
   const [revealed, setRevealed] = useState<number[]>([]);
   const [finalIndex, setFinalIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
+  const [finalWrongChoices, setFinalWrongChoices] = useState<number[]>([]);
   const [testVersion, setTestVersion] = useState(0);
 
   const mixedMiniTours = useMemo(() => miniTours.map(block => block.map(mixQuestion)), []);
@@ -217,7 +220,23 @@ export default function SatsRoute({ onBack, onMatching, onNext }: { onBack: () =
     [testVersion],
   );
 
-  const jump = (next: Page) => { setPage(next); setPick(null); window.scrollTo(0, 0); };
+  const jump = (next: Page) => { setPage(next); setPick(null); setFinalWrongChoices([]); window.scrollTo(0, 0); };
+  const currentFinal = finalSet[finalIndex];
+  const chooseFinalAnswer = (index: number) => {
+    if (pick === currentFinal.answer) return;
+    setPick(index);
+    if (index === currentFinal.answer) {
+      if (finalWrongChoices.length === 0) setFinalScore(value => value + 1);
+      return;
+    }
+    if (!finalWrongChoices.includes(index)) setFinalWrongChoices(choices => [...choices, index]);
+  };
+  const nextFinal = () => {
+    if (pick !== currentFinal.answer) return;
+    setFinalIndex(finalIndex + 1);
+    setFinalWrongChoices([]);
+    setPick(null);
+  };
   const startPart = (index: number) => { setPart(index); setStep(index * 3); jump("lesson"); };
   const resetMini = () => { setMiniIndex(0); setMiniFirstTry(0); setMiniWrongAttempts(0); setMiniWrongChoices([]); setMiniDone(false); setPick(null); };
   const startMini = () => { resetMini(); jump("mini"); };
@@ -286,6 +305,6 @@ export default function SatsRoute({ onBack, onMatching, onNext }: { onBack: () =
 
     {page === "cards" && <><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Сначала произнеси ответ вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((card, index) => <button className={revealed.includes(index) ? "memory flipped" : "memory"} key={card[0]} onClick={() => setRevealed(revealed.includes(index) ? revealed.filter(item => item !== index) : [...revealed, index])}><span>{revealed.includes(index) ? card[1] : card[0]}</span><small>{revealed.includes(index) ? "Ответ" : "Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={() => jump("final")}>Итоговая проверка →</button></>}
 
-      {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalIndex + 1, 10)} ИЗ 10</span>{finalIndex < 10 ? <><h1>{finalSet[finalIndex].title}</h1>{finalSet[finalIndex].options.map((option, index) => <button key={option} disabled={pick !== null} className={pick === index ? (index === finalSet[finalIndex].answer ? "right" : "wrong") : ""} onClick={() => { setPick(index); if (index === finalSet[finalIndex].answer) setFinalScore(finalScore + 1); }}>{option}</button>)}{pick !== null && <><p className="explain">{pick === finalSet[finalIndex].answer ? "Верно." : <>Правильный ответ: {finalSet[finalIndex].options[finalSet[finalIndex].answer]}.</>}</p><button className="primary" onClick={() => { setFinalIndex(finalIndex + 1); setPick(null); }}>{finalIndex < 9 ? "Следующее задание →" : "Узнать результат →"}</button></>}</> : <><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore === 10 ? "МОЛОДЕЦ" : "Есть ошибки"}</h1><p>{finalScore === 10 ? "Все задания выполнены верно. Можно переходить к следующему маршруту." : "Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore === 10 ? <button className="primary" onClick={onNext}>Следующий маршрут →</button> : <div className="task-actions"><button className="primary" onClick={() => { setFinalIndex(0); setFinalScore(0); setPick(null); setTestVersion(testVersion + 1); }}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
+      {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalIndex + 1, 10)} ИЗ 10</span>{finalIndex < 10 ? <><h1>{currentFinal.title}</h1>{currentFinal.options.map((option, index) => <button key={option} disabled={pick === currentFinal.answer} className={pick === index ? (index === currentFinal.answer ? "right" : "wrong") : ""} onClick={() => chooseFinalAnswer(index)}>{option}</button>)}{pick !== null && <p className="explain">{pick === currentFinal.answer ? "Верно!" : "Пока неверно. Попробуй ещё раз"}</p>}{pick === currentFinal.answer && <button className="primary" onClick={nextFinal}>{finalIndex < 9 ? "Следующее задание →" : "Узнать результат →"}</button>}</> : <><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore === 10 ? "МОЛОДЕЦ" : "Есть ошибки"}</h1><p>{finalScore === 10 ? "Все задания выполнены верно. Можно переходить к следующему маршруту." : "Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore === 10 ? <button className="primary" onClick={onNext}>Следующий маршрут →</button> : <div className="task-actions"><button className="primary" onClick={() => { setFinalIndex(0); setFinalScore(0); setPick(null); setFinalWrongChoices([]); setTestVersion(testVersion + 1); }}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
   </main>;
 }

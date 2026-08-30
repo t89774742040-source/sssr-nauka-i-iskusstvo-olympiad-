@@ -797,12 +797,29 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
   const [miniDone, setMiniDone] = useState(false);
   const [finalI, setFinalI] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
+  const [finalWrongChoices, setFinalWrongChoices] = useState<number[]>([]);
   const [revealed, setRevealed] = useState<number[]>([]);
   const [testVersion, setTestVersion] = useState(0);
   const mixedMini = useMemo(() => highriseMini.map(block => block.map(mixHighriseQuestion)), []);
   const finalQuestions = useMemo(() => highriseMini.flat().map(mixHighriseQuestion).sort(() => Math.random() - .5).slice(0, 10), [testVersion]);
   const part = Math.floor(step / 3);
-  const jump = (next: typeof page) => { setPage(next); setPick(null); scrollTo(0, 0); };
+  const jump = (next: typeof page) => { setPage(next); setPick(null); setFinalWrongChoices([]); scrollTo(0, 0); };
+  const currentFinal = finalQuestions[finalI];
+  const chooseFinalAnswer = (index: number) => {
+    if (pick === currentFinal.answer) return;
+    setPick(index);
+    if (index === currentFinal.answer) {
+      if (finalWrongChoices.length === 0) setFinalScore(value => value + 1);
+      return;
+    }
+    if (!finalWrongChoices.includes(index)) setFinalWrongChoices(choices => [...choices, index]);
+  };
+  const nextFinal = () => {
+    if (pick !== currentFinal.answer) return;
+    setFinalI(finalI + 1);
+    setFinalWrongChoices([]);
+    setPick(null);
+  };
   const startPart = (n: number) => { setStep(n * 3); jump("lesson"); };
   const resetMini = () => { setMiniI(0); setScore(0); setMiniWrongAttempts(0); setMiniWrongChoices([]); setMiniDone(false); setPick(null); };
   const beginMini = () => { resetMini(); jump("mini"); };
@@ -875,7 +892,7 @@ function HighriseRoute({ onBack, onMatching, onNext }: { onBack: () => void; onM
       {page === "mini" && <section className="quiz">{miniDone ? <><h1>Мини-тур завершён!</h1><p><strong>Без ошибок: {score} из 5</strong></p><p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p><div className="task-actions"><button className="primary" onClick={resetMini}>Повторить мини-тур</button><button className="primary" onClick={continueAfterMini}>Продолжить маршрут</button></div></> : <><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightHighriseFacts(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick===q.answer} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>chooseMiniAnswer(i)}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<p className="explain">{pick===q.answer?"Верно!":"Пока неверно. Попробуй ещё раз"}</p>}{pick===q.answer&&<button className="primary" onClick={nextQuestion}>{miniI<4?"Следующее задание →":"Завершить мини-тур →"}</button>}</>}</section>}
       {page === "workshop" && <RouteWorkshop data={highriseWorkshop} onBack={() => jump("plan")} onFinish={() => jump("cards")} />}
       {page === "cards" && <><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Сначала произнеси ответ вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{revealed.includes(i) ? highlightHighriseFacts(c[1]) : <strong style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>{highlightHighriseFacts(c[0])}</strong>}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
-      {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightHighriseFacts(finalQuestions[finalI].title)}</h1>{finalQuestions[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finalQuestions[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finalQuestions[finalI].answer)setFinalScore(finalScore+1)}}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<><p className="explain">{pick===finalQuestions[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finalQuestions[finalI].options[finalQuestions[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
+      {page === "final" && <section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightHighriseFacts(currentFinal.title)}</h1>{currentFinal.options.map((a,i)=><button key={a} disabled={pick===currentFinal.answer} className={pick===i?(i===currentFinal.answer?"right":"wrong"):""} onClick={()=>chooseFinalAnswer(i)}>{highlightOptionFacts(a)}</button>)}{pick!==null&&<p className="explain">{pick===currentFinal.answer?"Верно!":"Пока неверно. Попробуй ещё раз"}</p>}{pick===currentFinal.answer&&<button className="primary" onClick={nextFinal}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setFinalWrongChoices([]);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
     </main>
   );
 }
@@ -988,10 +1005,14 @@ function VdnhRoute({onBack,onMatching,onNext}:{onBack:()=>void;onMatching:()=>vo
   const [miniWrongAttempts,setMiniWrongAttempts]=useState(0),[miniWrongChoices,setMiniWrongChoices]=useState<number[]>([]),[miniDone,setMiniDone]=useState(false);
   const [revealed,setRevealed]=useState<number[]>([]);
   const [testVersion,setTestVersion]=useState(0);
+  const [finalWrongChoices,setFinalWrongChoices]=useState<number[]>([]);
   const mixed=useMemo(()=>vdnhMini.map(block=>block.map(mixHighriseQuestion)),[]);
   const finals=useMemo(()=>vdnhMini.flat().map(mixHighriseQuestion).sort(()=>Math.random()-.5).slice(0,10),[testVersion]);
   const part=Math.floor(step/3),q=mixed[part][miniI];
-  const jump=(p:typeof page)=>{setPage(p);setPick(null);scrollTo(0,0)};
+  const jump=(p:typeof page)=>{setPage(p);setPick(null);setFinalWrongChoices([]);scrollTo(0,0)};
+  const currentFinal=finals[finalI];
+  const chooseFinalAnswer=(index:number)=>{if(pick===currentFinal.answer)return;setPick(index);if(index===currentFinal.answer){if(finalWrongChoices.length===0)setFinalScore(value=>value+1);return}if(!finalWrongChoices.includes(index))setFinalWrongChoices(choices=>[...choices,index])};
+  const nextFinal=()=>{if(pick!==currentFinal.answer)return;setFinalI(finalI+1);setFinalWrongChoices([]);setPick(null)};
   const startPart=(n:number)=>{setStep(n*3);jump("lesson")};
   const resetMini=()=>{setMiniI(0);setScore(0);setMiniWrongAttempts(0);setMiniWrongChoices([]);setMiniDone(false);setPick(null)};
   const startMini=()=>{resetMini();jump("mini")};
@@ -1006,7 +1027,7 @@ function VdnhRoute({onBack,onMatching,onNext}:{onBack:()=>void;onMatching:()=>vo
     {page==="mini"&&<section className="quiz">{miniDone?<><h1>Мини-тур завершён!</h1><p><strong>Без ошибок: {score} из 5</strong></p><p><strong>Неправильных попыток: {miniWrongAttempts}</strong></p><div className="task-actions"><button className="primary" onClick={resetMini}>Повторить мини-тур</button><button className="primary" onClick={continueAfterMini}>Продолжить маршрут</button></div></>:<><span>МИНИ-ТУР • ЧАСТЬ {part+1} • {miniI+1} ИЗ 5</span><h1>{highlightVdnh(q.title)}</h1>{q.options.map((a,i)=><button key={a} disabled={pick===q.answer} className={pick===i?(i===q.answer?"right":"wrong"):""} onClick={()=>chooseMiniAnswer(i)}>{highlightVdnhSculptorOption(a,q.title==="Кто создал скульптуру «Рабочий и колхозница»?",q.title==="С чьими сказками связан замысел фонтана «Каменный цветок»?")}</button>)}{pick!==null&&<p className="explain">{pick===q.answer?"Верно!":"Пока неверно. Попробуй ещё раз"}</p>}{pick===q.answer&&<button className="primary" onClick={nextMini}>{miniI<4?"Следующее задание →":"Завершить мини-тур →"}</button>}</>}</section>}
     {page==="workshop"&&<RouteWorkshop data={vdnhWorkshop} onBack={()=>jump("plan")} onFinish={()=>jump("cards")}/>} 
     {page==="cards"&&<><div className="label">КАРТОЧКИ БЕЗ ПОДСКАЗОК</div><h1>Вспомни точный ответ</h1><p>Ответь вслух, затем переверни карточку.</p><div className="card-grid">{cards.map((c,i)=><button className={revealed.includes(i)?"memory flipped":"memory"} key={c[0]} onClick={()=>setRevealed(revealed.includes(i)?revealed.filter(x=>x!==i):[...revealed,i])}><span>{highlightVdnh(revealed.includes(i)?c[1]:c[0])}</span><small>{revealed.includes(i)?"Ответ":"Узнать ответ →"}</small></button>)}</div><button className="primary center" onClick={()=>jump("final")}>Итоговая проверка →</button></>}
-    {page==="final"&&<section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightVdnh(finals[finalI].title)}</h1>{finals[finalI].options.map((a,i)=><button key={a} disabled={pick!==null} className={pick===i?(i===finals[finalI].answer?"right":"wrong"):""} onClick={()=>{setPick(i);if(i===finals[finalI].answer)setFinalScore(finalScore+1)}}>{highlightVdnhSculptorOption(a,finals[finalI].title==="Кто создал скульптуру «Рабочий и колхозница»?",false)}</button>)}{pick!==null&&<><p className="explain">{pick===finals[finalI].answer?"Верно.":<>Правильный ответ: {highlightOptionFacts(finals[finalI].options[finals[finalI].answer])}.</>}</p><button className="primary" onClick={()=>{setFinalI(finalI+1);setPick(null)}}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button></>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
+    {page==="final"&&<section className="quiz"><span>ИТОГОВАЯ ПРОВЕРКА • {Math.min(finalI+1,10)} ИЗ 10</span>{finalI<10?<><h1>{highlightVdnh(currentFinal.title)}</h1>{currentFinal.options.map((a,i)=><button key={a} disabled={pick===currentFinal.answer} className={pick===i?(i===currentFinal.answer?"right":"wrong"):""} onClick={()=>chooseFinalAnswer(i)}>{highlightVdnhSculptorOption(a,currentFinal.title==="Кто создал скульптуру «Рабочий и колхозница»?",false)}</button>)}{pick!==null&&<p className="explain">{pick===currentFinal.answer?"Верно!":"Пока неверно. Попробуй ещё раз"}</p>}{pick===currentFinal.answer&&<button className="primary" onClick={nextFinal}>{finalI<9?"Следующее задание →":"Узнать результат →"}</button>}</>:<><div className="result">{finalScore}<small>/ 10</small></div><h1>{finalScore===10?"МОЛОДЕЦ":"Есть ошибки"}</h1><p>{finalScore===10?"Все задания выполнены верно. Можно переходить к следующему маршруту.":"Пройди итоговую проверку ещё раз или перейди к следующему маршруту."}</p>{finalScore===10?<button className="primary" onClick={onNext}>Следующий маршрут →</button>:<div className="task-actions"><button className="primary" onClick={()=>{setFinalI(0);setFinalScore(0);setPick(null);setFinalWrongChoices([]);setTestVersion(testVersion+1)}}>Пройти ещё раз</button><button className="secondary" onClick={onNext}>Перейти к следующему маршруту →</button></div>}</>}</section>}
   </main>
 }
 
