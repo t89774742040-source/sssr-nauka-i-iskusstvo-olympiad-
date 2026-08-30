@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import SatsRoute from "./SatsRoute";
 import StarsRoute from "./StarsRoute";
+import TsiolkovskyRoute from "./TsiolkovskyRoute";
 import TowerRoute from "./TowerRoute";
 import RouteWorkshop, { type WorkshopData } from "./RouteWorkshop";
 import FinalExpedition from "./FinalExpedition";
@@ -1223,90 +1224,7 @@ function App() {
       {view === "stars" && <StarsRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("route")} />}
       {view === "tower" && <TowerRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("finale")} />}
       {view === "finale" && <FinalExpedition onBack={() => go("home")} />}
-      {view === "route" && (
-        <main className="compact route-start">
-          <button className="back" onClick={() => go("home")}>
-            ← Карта тем
-          </button>
-          <div className="label">ТЕМА • КОНСТАНТИН ЭДУАРДОВИЧ ЦИОЛКОВСКИЙ</div>
-          <section className="route-cover person-cover">
-            <img src="./assets/tsiolkovsky-portrait.png" alt="Константин Эдуардович Циолковский" />
-            <div>
-              <span>НАУКА СССР • КОСМОНАВТИКА</span>
-              <h1>Константин Эдуардович Циолковский</h1>
-              <p><strong>Калужский учитель и учёный-самоучка</strong>, идеи которого открыли людям дорогу к звёздам.</p>
-              <dl>
-                <div><dt>Годы жизни</dt><dd><strong className="date-value">1857–1935</strong></dd></div>
-                <div><dt>Главная профессия</dt><dd><strong>Учитель</strong> арифметики, физики и геометрии</dd></div>
-                <div><dt>Образование</dt><dd><strong>Учёный-самоучка</strong>: три года самостоятельно занимался в Румянцевской библиотеке</dd></div>
-                <div><dt>Чем знаменит</dt><dd>Предложил и научно доказал необходимость <strong>ракеты для полётов в космос</strong></dd></div>
-                <div className="architects"><dt>Источник школьного тура</dt><dd>книга <strong>«Циолковский»</strong> Александра Ткаченко</dd></div>
-              </dl>
-            </div>
-          </section>
-          <div className="route-rule"><b>Маршрут к звёздам</b><p>Сначала знакомимся с человеком, затем изучаем его жизненный путь и научные идеи. После каждой тройки учебных экранов проходит олимпиадный мини-тур.</p></div>
-          <div className="part-list">
-            {parts.map((p, i) => (
-              <button
-                className={
-                  i === Math.floor(savedStep / 3)
-                    ? "part-row current"
-                    : "part-row"
-                }
-                key={p.title}
-                onClick={() => {
-                  openStep(i * 3);
-                  go("lesson");
-                }}
-              >
-                <span>
-                  <b>
-                    Часть {i + 1}. {p.title}
-                  </b>
-                  <small>{p.subtitle}</small>
-                </span>
-                <span>Открыть: 3 экрана → 5 заданий&nbsp; →</span>
-              </button>
-            ))}
-            <button
-              className="part-row final-row"
-              onClick={() => go("workshop")}
-            >
-              <span>
-                <b>Часть 4. Олимпиадная мастерская</b>
-                <small>
-                  Портрет • соответствия • хронология • ошибки • анаграмма •
-                  кроссворд
-                </small>
-              </span>
-              <span>Открыть →</span>
-            </button>
-            <button className="part-row final-row" onClick={() => go("cards")}>
-              <span>
-                <b>Часть 5. 20 изображений — вписать названия</b>
-                <small>Обязательные подписи муниципального и регионального туров</small>
-              </span>
-              <span>Писать ответы →</span>
-            </button>
-            <button className="part-row final-row" onClick={() => go("quiz")}>
-              <span>
-                <b>Часть 6. Итоговая проверка</b>
-                <small>10 олимпиадных заданий</small>
-              </span>
-              <span>Открыть →</span>
-            </button>
-          </div>
-          <div className="start-actions">
-            <button className="primary" onClick={() => start(false)}>
-              Продолжить: часть {Math.floor(savedStep / 3) + 1}, экран{" "}
-              {(savedStep % 3) + 1} →
-            </button>
-            <button className="secondary" onClick={() => start(true)}>
-              Начать сначала
-            </button>
-          </div>
-        </main>
-      )}
+      {view === "route" && <TsiolkovskyRoute onBack={() => go("home")} onMatching={() => go("cards")} onNext={() => go("tower")} />}
       {view === "lesson" && (
         <main className="lesson">
           <button className="back" onClick={() => go("route")}>
