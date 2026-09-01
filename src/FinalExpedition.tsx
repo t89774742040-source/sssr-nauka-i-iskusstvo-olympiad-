@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import OlympiadTrainer from "./OlympiadTrainer";
 
 type Group = "Названия" | "Главные факты" | "Расшифровки" | "Соответствия" | "Хронология" | "Логика";
 type Route = "Московские высотки" | "ВДНХ" | "Наталия Сац" | "Летающие звёзды" | "Циолковский" | "Останкинская телебашня" | "Общее";
@@ -104,6 +105,7 @@ const gradeOf = (score: number, total: number) => {
 export default function FinalExpedition({onBack}:{onBack:()=>void}) {
   const [page,setPage] = useState<"intro"|"test"|"result"|"review">("intro");
   const [mode,setMode] = useState<"all"|"names">("all");
+  const [showOlympiad,setShowOlympiad] = useState(false);
   const [index,setIndex] = useState(0);
   const [reviewIndex,setReviewIndex] = useState<number|null>(null);
   const [answers,setAnswers] = useState<(string|number|null)[]>([]);
@@ -122,6 +124,8 @@ export default function FinalExpedition({onBack}:{onBack:()=>void}) {
   const grade = gradeOf(score, active.length);
   const routeNames = ["Московские высотки","ВДНХ","Наталия Сац","Летающие звёзды","Циолковский","Останкинская телебашня"] as Route[];
 
+  if(showOlympiad) return <OlympiadTrainer onBack={()=>{setShowOlympiad(false);scrollTo(0,0)}} />;
+
   if(page === "intro") return <main className="compact finale-shell">
     <button className="back" onClick={onBack}>← Карта маршрутов</button>
     <section className="finale-cover">
@@ -129,7 +133,7 @@ export default function FinalExpedition({onBack}:{onBack:()=>void}) {
       <h1>Финальная экспедиция</h1>
       <p>Все шесть маршрутов соединяются в одной проверке. Подсказок и показа правильного ответа во время прохождения не будет.</p>
       <div className="finale-rounds">{groups.map((g,i)=><div key={g.name}><b>{i+1}. {g.name}</b><span>{g.text}</span><strong>{g.count} {g.count >= 5 ? "заданий" : "задания"}</strong></div>)}</div>
-      <div className="finale-actions"><button className="primary" onClick={()=>start("all")}>Начать 41 задание →</button><button className="secondary" onClick={()=>start("names")}>Только написание названий</button></div>
+      <div className="finale-actions"><button className="primary" onClick={()=>start("all")}>Начать 41 задание →</button><button className="secondary" onClick={()=>start("names")}>Только написание названий</button><button className="secondary" onClick={()=>{setShowOlympiad(true);scrollTo(0,0)}}>Как на олимпиаде →</button></div>
     </section>
   </main>;
 
