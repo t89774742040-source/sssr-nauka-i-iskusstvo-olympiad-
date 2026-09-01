@@ -1,9 +1,11 @@
 import { useState } from "react";
 import AlphabetCipherPractice from "./olympiad/AlphabetCipherPractice";
+import FigureCountPractice from "./olympiad/FigureCountPractice";
 import LetterSeriesPractice from "./olympiad/LetterSeriesPractice";
 import NoVowelsPractice from "./olympiad/NoVowelsPractice";
 import NumberSeriesPractice from "./olympiad/NumberSeriesPractice";
 import { alphabetCipherTasks } from "./olympiad/alphabetCipherData";
+import { figureCountTasks } from "./olympiad/figureCountData";
 import { letterSeriesTasks } from "./olympiad/letterSeriesData";
 import { noVowelsTasks } from "./olympiad/noVowelsData";
 import { numberSeriesTasks } from "./olympiad/numberSeriesData";
@@ -18,7 +20,7 @@ const sections = [
 ] as const;
 
 type SectionId = typeof sections[number]["id"];
-type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series";
+type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series" | "figure-count";
 
 const ruPlural = (n: number, one: string, few: string, many: string) => {
   const n10 = n % 10, n100 = n % 100;
@@ -50,6 +52,10 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
 
   if (sectionId === "numbers-images" && practice === "number-series") {
     return <NumberSeriesPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
+  }
+
+  if (sectionId === "numbers-images" && practice === "figure-count") {
+    return <FigureCountPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
   }
 
   if (section) {
@@ -85,6 +91,11 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
                 <h2>Числовые ряды</h2>
                 <p>Какое число следующее?</p>
                 <strong className="olympiad-count">{numberSeriesTasks.length} {ruPlural(numberSeriesTasks.length, "задание", "задания", "заданий")}</strong>
+              </button>
+              <button type="button" className="olympiad-card" onClick={() => { setPractice("figure-count"); scrollTo(0, 0); }}>
+                <h2>Сколько фигур</h2>
+                <p>Посчитай фигуры на рисунке</p>
+                <strong className="olympiad-count">{figureCountTasks.length} {ruPlural(figureCountTasks.length, "задание", "задания", "заданий")}</strong>
               </button>
             </div>
           ) : (

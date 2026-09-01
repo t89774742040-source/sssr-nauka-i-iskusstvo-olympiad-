@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="480" height="480" role="img" aria-labelledby="title desc">
+  <title id="title">Ракета на стартовой площадке</title>
+  <desc id="desc">Геометрический рисунок для тренировки подсчёта фигур — авторский аналог, не изображение конкретной модели ракеты</desc>
+  <rect x="0" y="0" width="600" height="600" fill="white"/>
+  <g fill="none" stroke="#202020" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="300,45 230,180 370,180"/>
+    <polyline points="230,180 230,420 370,420 370,180"/>
+    <line x1="230" y1="270" x2="370" y2="270"/>
+    <line x1="230" y1="340" x2="370" y2="340"/>
+    <polygon points="265,210 335,210 335,245 265,245"/>
+    <polygon points="230,330 165,480 230,480"/>
+    <polygon points="370,330 435,480 370,480"/>
+    <polyline points="255,420 240,460 360,460 345,420"/>
+    <polygon points="125,480 475,480 475,505 125,505"/>
+    <polyline points="155,505 155,550 445,550 445,505"/>
+    <line x1="225" y1="505" x2="225" y2="550"/>
+    <line x1="375" y1="505" x2="375" y2="550"/>
+  </g>
+</svg>
