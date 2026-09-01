@@ -2,9 +2,11 @@ import { useState } from "react";
 import AlphabetCipherPractice from "./olympiad/AlphabetCipherPractice";
 import LetterSeriesPractice from "./olympiad/LetterSeriesPractice";
 import NoVowelsPractice from "./olympiad/NoVowelsPractice";
+import NumberSeriesPractice from "./olympiad/NumberSeriesPractice";
 import { alphabetCipherTasks } from "./olympiad/alphabetCipherData";
 import { letterSeriesTasks } from "./olympiad/letterSeriesData";
 import { noVowelsTasks } from "./olympiad/noVowelsData";
+import { numberSeriesTasks } from "./olympiad/numberSeriesData";
 
 const sections = [
   {id: "crosswords", name: "Кроссворды", text: "Сетки и определения"},
@@ -16,7 +18,7 @@ const sections = [
 ] as const;
 
 type SectionId = typeof sections[number]["id"];
-type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher";
+type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series";
 
 const ruPlural = (n: number, one: string, few: string, many: string) => {
   const n10 = n % 10, n100 = n % 100;
@@ -46,8 +48,13 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
     return <AlphabetCipherPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
   }
 
+  if (sectionId === "numbers-images" && practice === "number-series") {
+    return <NumberSeriesPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
+  }
+
   if (section) {
     const wordLogic = section.id === "word-logic";
+    const numbersImages = section.id === "numbers-images";
     return (
       <main className="compact olympiad-shell">
         <section className="olympiad-cover">
@@ -70,6 +77,14 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
                 <h2>Шифр по алфавиту</h2>
                 <p>Расшифруй слово</p>
                 <strong className="olympiad-count">{alphabetCipherTasks.length} {ruPlural(alphabetCipherTasks.length, "задание", "задания", "заданий")}</strong>
+              </button>
+            </div>
+          ) : numbersImages ? (
+            <div className="olympiad-exercises">
+              <button type="button" className="olympiad-card" onClick={() => { setPractice("number-series"); scrollTo(0, 0); }}>
+                <h2>Числовые ряды</h2>
+                <p>Какое число следующее?</p>
+                <strong className="olympiad-count">{numberSeriesTasks.length} {ruPlural(numberSeriesTasks.length, "задание", "задания", "заданий")}</strong>
               </button>
             </div>
           ) : (
