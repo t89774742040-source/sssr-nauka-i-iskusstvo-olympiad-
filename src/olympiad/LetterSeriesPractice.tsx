@@ -2,10 +2,45 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { displayWithoutFinalPeriod } from "./displayText";
 import {
   letterSeriesAnswersMatch,
+  letterSeriesSearchCommon,
   letterSeriesTasks,
   seriesPromptParts,
-  seriesShowParts,
+  type LetterSeriesKind,
 } from "./letterSeriesData";
+
+const howToRule: Record<LetterSeriesKind, string> = {
+  "first-to-end": "На каждом шаге первую букву переносим в конец",
+  "last-to-start": "На каждом шаге последнюю букву переносим в начало",
+  "first-two-to-end": "На каждом шаге первые две буквы переносим в конец, сохраняя их порядок",
+};
+
+const explainStep = (word: string, kind: LetterSeriesKind) => {
+  if (kind === "last-to-start") {
+    const move = word.slice(-1);
+    const rest = word.slice(0, -1);
+    return [
+      {text: rest},
+      {text: "|"},
+      {text: move, move: true},
+      {text: "→"},
+      {text: move, move: true},
+      {text: "|"},
+      {text: rest},
+    ];
+  }
+  const count = kind === "first-two-to-end" ? 2 : 1;
+  const move = word.slice(0, count);
+  const rest = word.slice(count);
+  return [
+    {text: move, move: true},
+    {text: "|"},
+    {text: rest},
+    {text: "→"},
+    {text: rest},
+    {text: "|"},
+    {text: move, move: true},
+  ];
+};
 
 type Outcome = "first" | "retry" | "revealed";
 
@@ -28,6 +63,7 @@ export default function LetterSeriesPractice({onBack}:{onBack:()=>void}) {
   const [showError, setShowError] = useState(false);
   const [resolved, setResolved] = useState<"correct" | "revealed" | null>(null);
   const [outcomes, setOutcomes] = useState<(Outcome | null)[]>(emptyOutcomes);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [done, setDone] = useState(false);
   const task = letterSeriesTasks[index];
 
@@ -41,6 +77,7 @@ export default function LetterSeriesPractice({onBack}:{onBack:()=>void}) {
     setFailed(false);
     setShowError(false);
     setResolved(null);
+    setSearchOpen(false);
   };
 
   const restart = () => {
@@ -122,8 +159,9 @@ export default function LetterSeriesPractice({onBack}:{onBack:()=>void}) {
           <div><i style={{width: `${((index + 1) / total) * 100}%`}} /></div>
         </div>
         <p className="olympiad-lead olympiad-instruction">
-          <span>Буквы переставляются по одному правилу</span>
-          <span>Продолжи ряд</span>
+          <span>Какое сочетание букв следующее?</span>
+          <span>Найди правило перестановки и продолжи ряд</span>
+          <span>Ответ может не быть настоящим словом</span>
         </p>
         <p className="olympiad-series" aria-label={seriesPromptParts(task.given).join(" ")}>
           {seriesPromptParts(task.given).map((part, partIndex) => (
@@ -132,7 +170,7 @@ export default function LetterSeriesPractice({onBack}:{onBack:()=>void}) {
         </p>
         {open && (
           <>
-            <label className="olympiad-label" htmlFor="olympiad-letter-series-answer">Полный ответ</label>
+            <label className="olympiad-label" htmlFor="olympiad-letter-series-answer">Следующее сочетание букв</label>
             <input
               id="olympiad-letter-series-answer"
               className="olympiad-field"
@@ -151,13 +189,38 @@ export default function LetterSeriesPractice({onBack}:{onBack:()=>void}) {
         {resolved && (
           <div className="olympiad-solution">
             <p><b>{resolved === "correct" ? "Верно" : "Решение открыто"}</b></p>
-            <p className="olympiad-answer">{displayWithoutFinalPeriod(task.answer)}</p>
-            <p>{displayWithoutFinalPeriod(task.rule)}</p>
-            <p className="olympiad-series-show" aria-label={task.show}>
-              {seriesShowParts(task.show).map((part, partIndex) => (
-                <span key={`${part}-${partIndex}`}>{part}</span>
+            <p><b>Как решить</b></p>
+            <p>{displayWithoutFinalPeriod(howToRule[task.kind])}</p>
+            <div className="olympiad-series-steps">
+              {task.given.map((word, stepIndex) => (
+                <p key={`${word}-${stepIndex}`} className="olympiad-series-step">
+                  {explainStep(word, task.kind).map((part, partIndex) => (
+                    part.move
+                      ? <b key={`${part.text}-${partIndex}`} className="olympiad-series-move">{part.text}</b>
+                      : <span key={`${part.text}-${partIndex}`}>{part.text}</span>
+                  ))}
+                </p>
               ))}
-            </p>
+            </div>
+            <p className="olympiad-answer">Ответ: {displayWithoutFinalPeriod(task.answer)}</p>
+            <button
+              type="button"
+              className="olympiad-alpha-search-toggle"
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen(openSearch => !openSearch)}
+            >
+              Как искать ответ
+            </button>
+            {searchOpen && (
+              <div className="olympiad-alpha-search">
+                {letterSeriesSearchCommon.map(line => (
+                  <p key={line}>{displayWithoutFinalPeriod(line)}</p>
+                ))}
+                {task.searchLines.map(line => (
+                  <p key={line}>{displayWithoutFinalPeriod(line)}</p>
+                ))}
+              </div>
+            )}
             <div className="olympiad-actions">
               <button type="button" className="primary" onClick={goNext}>{index + 1 === total ? "Результат" : "Следующее задание"}</button>
             </div>

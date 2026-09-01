@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { displayWithoutFinalPeriod } from "./displayText";
-import { answersMatch, noVowelsTasks } from "./noVowelsData";
+import { answersMatch, noVowelsSearchCommon, noVowelsSearchLines, noVowelsTasks } from "./noVowelsData";
 
 type Outcome = "first" | "retry" | "revealed";
 
@@ -23,6 +23,7 @@ export default function NoVowelsPractice({onBack}:{onBack:()=>void}) {
   const [showError, setShowError] = useState(false);
   const [resolved, setResolved] = useState<"correct" | "revealed" | null>(null);
   const [outcomes, setOutcomes] = useState<(Outcome | null)[]>(emptyOutcomes);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [done, setDone] = useState(false);
   const task = noVowelsTasks[index];
 
@@ -36,6 +37,7 @@ export default function NoVowelsPractice({onBack}:{onBack:()=>void}) {
     setFailed(false);
     setShowError(false);
     setResolved(null);
+    setSearchOpen(false);
   };
 
   const restart = () => {
@@ -147,6 +149,24 @@ export default function NoVowelsPractice({onBack}:{onBack:()=>void}) {
             <p className="olympiad-answer">{displayWithoutFinalPeriod(task.acceptedAnswers[0])}</p>
             <p>{displayWithoutFinalPeriod(task.hint)}</p>
             <p className="olympiad-source">{task.book}. {task.page}</p>
+            <button
+              type="button"
+              className="olympiad-alpha-search-toggle"
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen(openSearch => !openSearch)}
+            >
+              Как искать ответ
+            </button>
+            {searchOpen && (
+              <div className="olympiad-alpha-search">
+                {noVowelsSearchCommon.map(line => (
+                  <p key={line}>{displayWithoutFinalPeriod(line)}</p>
+                ))}
+                {(noVowelsSearchLines[index] ?? []).map(line => (
+                  <p key={line}>{displayWithoutFinalPeriod(line)}</p>
+                ))}
+              </div>
+            )}
             <div className="olympiad-actions">
               <button type="button" className="primary" onClick={goNext}>{index + 1 === total ? "Результат" : "Следующее задание"}</button>
             </div>

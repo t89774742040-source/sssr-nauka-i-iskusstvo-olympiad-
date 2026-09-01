@@ -1488,10 +1488,13 @@ header .brand-icon {
 .olympiad-series,.olympiad-series-show{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.5em;row-gap:.35em;max-width:100%}
 .olympiad-series{margin:0 0 22px;padding:18px 16px;border:2px solid #263d3b;background:#fffaf0;color:#285670;font-family:Georgia,serif;font-size:clamp(22px,4.6vw,36px);line-height:1.35}
 .olympiad-series-show{margin:0 0 12px;color:#285670;font-family:Georgia,serif;font-size:24px!important;line-height:1.35}
-.olympiad-series span,.olympiad-series-show span{white-space:nowrap}
+.olympiad-series span,.olympiad-series-show span,.olympiad-series-step span,.olympiad-series-move{white-space:nowrap}
+.olympiad-series-steps{display:flex;flex-direction:column;gap:8px;margin:0 0 12px;max-width:100%}
+.olympiad-series-step{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.5em;row-gap:.3em;margin:0;color:#285670;font-family:Georgia,serif;font-size:24px!important;line-height:1.35}
+.olympiad-series-move{color:#b74335;font-weight:800}
 .olympiad-alpha-table{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;margin:0 0 10px;max-width:100%}
 .olympiad-alpha-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;padding:6px 2px;border:2px solid #263d3b;background:#fffaf0}
-.olympiad-alpha-cell span{font-size:11px;font-weight:700;color:#285670;line-height:1}
+.olympiad-alpha-cell span{font-family:Arial,sans-serif;font-variant-numeric:lining-nums tabular-nums;font-size:11px;font-weight:700;color:#285670;line-height:1}
 .olympiad-alpha-cell b{font-family:Georgia,serif;font-size:18px;color:#285670;line-height:1;font-weight:700}
 .olympiad-alpha-yo{background:#d9e7e5;border-color:#28536d}
 .olympiad-alpha-note{margin:0 0 18px;color:#b74335;font-weight:700;font-size:18px;line-height:1.35}
@@ -1499,11 +1502,27 @@ header .brand-icon {
 .olympiad-alpha-code{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:52px;padding:12px 10px;border:2px solid #263d3b;background:#fffaf0;color:#285670;font-family:Georgia,serif;font-size:clamp(22px,4.6vw,32px);font-weight:700;line-height:1;white-space:nowrap}
 .olympiad-alpha-pairs{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0 0 12px;max-width:100%}
 .olympiad-alpha-pair{white-space:nowrap;font-family:Georgia,serif;color:#285670;font-size:20px;line-height:1.35}
+.olympiad-alpha-split{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.45em;row-gap:.3em;margin:0 0 12px;color:#285670;font-family:Arial,sans-serif;font-variant-numeric:lining-nums tabular-nums;font-size:24px!important;line-height:1.35;max-width:100%}
+.olympiad-alpha-split span{white-space:nowrap;font-family:inherit;font-size:inherit;font-variant-numeric:inherit;line-height:inherit;font-weight:inherit}
+.olympiad-cipher.olympiad-alpha-line{
+  font-family:Arial,sans-serif;
+  font-variant-numeric:lining-nums tabular-nums;
+}
+.olympiad-alpha-num{
+  font-family:Arial,sans-serif;
+  font-variant-numeric:lining-nums tabular-nums;
+  font-size:inherit;
+  line-height:inherit;
+}
+.olympiad-alpha-search-toggle{display:block;border:2px solid #263d3b;background:#fffaf0;color:#285670;font:inherit;font-weight:700;cursor:pointer;padding:12px 16px;margin:4px 0 12px;text-align:left}
+.olympiad-alpha-search{margin:0 0 8px;max-width:900px}
+.olympiad-alpha-search p{margin:0 0 8px}
 @media (hover:hover) and (pointer:fine){
   .olympiad-back:hover{color:#b74335}
   .olympiad-card:hover{background:#d9e7e5;border-color:#28536d}
+  .olympiad-alpha-search-toggle:hover{background:#d9e7e5;border-color:#28536d}
 }
-.olympiad-back:focus-visible,.olympiad-card:focus-visible{
+.olympiad-back:focus-visible,.olympiad-card:focus-visible,.olympiad-alpha-search-toggle:focus-visible{
   outline:3px solid #b74335;
   outline-offset:3px;
 }
@@ -1517,14 +1536,16 @@ header .brand-icon {
   .olympiad-practice{min-height:180px}
   .olympiad-cipher{font-size:clamp(20px,7vw,26px);padding:14px 12px}
   .olympiad-series{font-size:clamp(20px,7vw,26px);padding:14px 12px}
-  .olympiad-series-show{font-size:20px!important}
+  .olympiad-series-show,.olympiad-series-step{font-size:20px!important}
   .olympiad-alpha-table{grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px}
   .olympiad-alpha-cell b{font-size:16px}
   .olympiad-alpha-note{font-size:16px}
   .olympiad-alpha-code{min-width:44px;padding:10px 8px;font-size:22px}
   .olympiad-alpha-pair{font-size:18px}
+  .olympiad-alpha-split{font-size:20px!important}
   .olympiad-field{font-size:18px;padding:14px 12px}
   .olympiad-summary{grid-template-columns:minmax(0,1fr)}
   .olympiad-actions{flex-direction:column}
   .olympiad-actions button{width:100%}
+  .olympiad-alpha-search-toggle{width:100%}
 }

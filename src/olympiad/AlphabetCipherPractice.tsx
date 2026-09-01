@@ -2,14 +2,22 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { displayWithoutFinalPeriod } from "./displayText";
 import {
   alphabetCipherAnswersMatch,
+  alphabetCipherLine,
   alphabetCipherPairs,
   alphabetCipherTasks,
   alphabetLetters,
+  alphabetSearchCommon,
 } from "./alphabetCipherData";
 
 type Outcome = "first" | "retry" | "revealed";
 
 const emptyOutcomes = () => Array<Outcome | null>(alphabetCipherTasks.length).fill(null);
+
+const renderSearchLine = (text: string) => text.split(/(\d+(?:\s*\|\s*\d+)*)/u).map((chunk, chunkIndex) => (
+  /^\d/u.test(chunk)
+    ? <span key={chunkIndex} className="olympiad-alpha-num">{chunk}</span>
+    : chunk
+));
 
 const scrollPracticeStart = (el: HTMLElement | null) => {
   if (!el) return;
@@ -28,6 +36,7 @@ export default function AlphabetCipherPractice({onBack}:{onBack:()=>void}) {
   const [showError, setShowError] = useState(false);
   const [resolved, setResolved] = useState<"correct" | "revealed" | null>(null);
   const [outcomes, setOutcomes] = useState<(Outcome | null)[]>(emptyOutcomes);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [done, setDone] = useState(false);
   const task = alphabetCipherTasks[index];
 
@@ -41,6 +50,7 @@ export default function AlphabetCipherPractice({onBack}:{onBack:()=>void}) {
     setFailed(false);
     setShowError(false);
     setResolved(null);
+    setSearchOpen(false);
   };
 
   const restart = () => {
@@ -110,7 +120,7 @@ export default function AlphabetCipherPractice({onBack}:{onBack:()=>void}) {
   }
 
   const open = resolved === null;
-  const pairs = alphabetCipherPairs(task.codes);
+  const cipherLine = alphabetCipherLine(task.codes);
 
   return (
     <main className="compact olympiad-shell">
@@ -123,26 +133,9 @@ export default function AlphabetCipherPractice({onBack}:{onBack:()=>void}) {
           <div><i style={{width: `${((index + 1) / total) * 100}%`}} /></div>
         </div>
         <p className="olympiad-lead olympiad-instruction">
-          <span>Каждое число обозначает номер буквы в русском алфавите</span>
-          <span>Расшифруй слово</span>
+          <span>Вспомни порядковые номера букв в русском алфавите и расшифруй слово</span>
         </p>
-        <div className="olympiad-alpha-table">
-          {alphabetLetters.map((letter, letterIndex) => (
-            <div
-              key={letter}
-              className={letter === "Ё" ? "olympiad-alpha-cell olympiad-alpha-yo" : "olympiad-alpha-cell"}
-            >
-              <span>{letterIndex + 1}</span>
-              <b>{letter}</b>
-            </div>
-          ))}
-        </div>
-        <p className="olympiad-alpha-note">Ё — седьмая буква</p>
-        <div className="olympiad-alpha-codes" aria-label={task.codes.join(" ")}>
-          {task.codes.map((code, codeIndex) => (
-            <span key={`${code}-${codeIndex}`} className="olympiad-alpha-code">{code}</span>
-          ))}
-        </div>
+        <p className="olympiad-cipher olympiad-alpha-line">{cipherLine}</p>
         {open && (
           <>
             <label className="olympiad-label" htmlFor="olympiad-alphabet-cipher-answer">Полный ответ</label>
@@ -164,14 +157,51 @@ export default function AlphabetCipherPractice({onBack}:{onBack:()=>void}) {
         {resolved && (
           <div className="olympiad-solution">
             <p><b>{resolved === "correct" ? "Верно" : "Решение открыто"}</b></p>
+            <p><b>Как решить</b></p>
+            <div className="olympiad-alpha-table">
+              {alphabetLetters.map((letter, letterIndex) => (
+                <div key={letter} className="olympiad-alpha-cell">
+                  <span>{letterIndex + 1}</span>
+                  <b>{letter}</b>
+                </div>
+              ))}
+            </div>
+            <p>Номер буквы может состоять из одной или двух цифр</p>
+            <p>Разделяем строку на номера от 1 до 33 так, чтобы получилось слово</p>
+            <p className="olympiad-alpha-split" aria-label={`${cipherLine} → ${task.codes.join(" | ")}`}>
+              <span>{cipherLine}</span>
+              <span>→</span>
+              {task.codes.map((code, codeIndex) => (
+                <span key={`${code}-${codeIndex}`}>{codeIndex > 0 ? "| " : ""}{code}</span>
+              ))}
+            </p>
             <div className="olympiad-alpha-pairs">
-              {pairs.map((pair, pairIndex) => (
+              {alphabetCipherPairs(task.codes).map((pair, pairIndex) => (
                 <span key={`${pair.code}-${pair.letter}-${pairIndex}`} className="olympiad-alpha-pair">
-                  {pair.code} → {pair.letter}
+                  <span className="olympiad-alpha-num">{pair.code}</span>
+                  {" → "}{pair.letter}
                 </span>
               ))}
             </div>
             <p className="olympiad-answer">{displayWithoutFinalPeriod(task.answer)}</p>
+            <button
+              type="button"
+              className="olympiad-alpha-search-toggle"
+              aria-expanded={searchOpen}
+              onClick={() => setSearchOpen(openSearch => !openSearch)}
+            >
+              Как искать ответ
+            </button>
+            {searchOpen && (
+              <div className="olympiad-alpha-search">
+                {alphabetSearchCommon.map(line => (
+                  <p key={line}>{renderSearchLine(displayWithoutFinalPeriod(line))}</p>
+                ))}
+                {task.searchLines.map(line => (
+                  <p key={line}>{renderSearchLine(displayWithoutFinalPeriod(line))}</p>
+                ))}
+              </div>
+            )}
             <div className="olympiad-actions">
               <button type="button" className="primary" onClick={goNext}>{index + 1 === total ? "Результат" : "Следующее задание"}</button>
             </div>
