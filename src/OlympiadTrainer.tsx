@@ -1,12 +1,14 @@
 import { useState } from "react";
 import AlphabetCipherPractice from "./olympiad/AlphabetCipherPractice";
 import FigureCountPractice from "./olympiad/FigureCountPractice";
+import LetterDigitsPractice from "./olympiad/LetterDigitsPractice";
 import LetterSeriesPractice from "./olympiad/LetterSeriesPractice";
 import NoVowelsPractice from "./olympiad/NoVowelsPractice";
 import NumberSeriesPractice from "./olympiad/NumberSeriesPractice";
 import OddPicturePractice from "./olympiad/OddPicturePractice";
 import { alphabetCipherTasks } from "./olympiad/alphabetCipherData";
 import { figureCountTasks } from "./olympiad/figureCountData";
+import { letterDigitsTasks } from "./olympiad/letterDigitsData";
 import { letterSeriesTasks } from "./olympiad/letterSeriesData";
 import { noVowelsTasks } from "./olympiad/noVowelsData";
 import { numberSeriesTasks } from "./olympiad/numberSeriesData";
@@ -22,7 +24,7 @@ const sections = [
 ] as const;
 
 type SectionId = typeof sections[number]["id"];
-type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series" | "figure-count" | "odd-picture";
+type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series" | "figure-count" | "odd-picture" | "letter-digits";
 
 const ruPlural = (n: number, one: string, few: string, many: string) => {
   const n10 = n % 10, n100 = n % 100;
@@ -62,6 +64,10 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
 
   if (sectionId === "numbers-images" && practice === "odd-picture") {
     return <OddPicturePractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
+  }
+
+  if (sectionId === "numbers-images" && practice === "letter-digits") {
+    return <LetterDigitsPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
   }
 
   if (section) {
@@ -107,6 +113,11 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
                 <h2>Лишний рисунок</h2>
                 <p>Выбери рисунок, который не подходит</p>
                 <strong className="olympiad-count">{oddPictureTasks.length} {ruPlural(oddPictureTasks.length, "задание", "задания", "заданий")}</strong>
+              </button>
+              <button type="button" className="olympiad-card" onClick={() => { setPractice("letter-digits"); scrollTo(0, 0); }}>
+                <h2>Буквы вместо цифр</h2>
+                <p>Найди, какие цифры спрятались за буквами</p>
+                <strong className="olympiad-count">{letterDigitsTasks.length} {ruPlural(letterDigitsTasks.length, "задание", "задания", "заданий")}</strong>
               </button>
             </div>
           ) : (
