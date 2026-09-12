@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AlphabetCipherPractice from "./olympiad/AlphabetCipherPractice";
+import CrosswordPractice from "./olympiad/CrosswordPractice";
 import FigureCountPractice from "./olympiad/FigureCountPractice";
 import LetterDigitsPractice from "./olympiad/LetterDigitsPractice";
 import LetterSeriesPractice from "./olympiad/LetterSeriesPractice";
@@ -7,6 +8,7 @@ import NoVowelsPractice from "./olympiad/NoVowelsPractice";
 import NumberSeriesPractice from "./olympiad/NumberSeriesPractice";
 import OddPicturePractice from "./olympiad/OddPicturePractice";
 import { alphabetCipherTasks } from "./olympiad/alphabetCipherData";
+import { crosswordPuzzles } from "./olympiad/crosswordData";
 import { figureCountTasks } from "./olympiad/figureCountData";
 import { letterDigitsTasks } from "./olympiad/letterDigitsData";
 import { letterSeriesTasks } from "./olympiad/letterSeriesData";
@@ -24,7 +26,7 @@ const sections = [
 ] as const;
 
 type SectionId = typeof sections[number]["id"];
-type PracticeId = "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series" | "figure-count" | "odd-picture" | "letter-digits";
+type PracticeId = "crossword" | "no-vowels" | "letter-series" | "alphabet-cipher" | "number-series" | "figure-count" | "odd-picture" | "letter-digits";
 
 const ruPlural = (n: number, one: string, few: string, many: string) => {
   const n10 = n % 10, n100 = n % 100;
@@ -41,6 +43,10 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
 
   const openHub = () => { setSectionId(null); setPractice(null); scrollTo(0, 0); };
   const openSection = (id: SectionId) => { setSectionId(id); setPractice(null); scrollTo(0, 0); };
+
+  if (sectionId === "crosswords" && practice === "crossword") {
+    return <CrosswordPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
+  }
 
   if (sectionId === "word-logic" && practice === "no-vowels") {
     return <NoVowelsPractice onBack={() => { setPractice(null); scrollTo(0, 0); }} />;
@@ -73,6 +79,7 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
   if (section) {
     const wordLogic = section.id === "word-logic";
     const numbersImages = section.id === "numbers-images";
+    const crosswords = section.id === "crosswords";
     return (
       <main className="compact olympiad-shell">
         <section className="olympiad-cover">
@@ -95,6 +102,14 @@ export default function OlympiadTrainer({onBack}:{onBack:()=>void}) {
                 <h2>Шифр по алфавиту</h2>
                 <p>Расшифруй слово</p>
                 <strong className="olympiad-count">{alphabetCipherTasks.length} {ruPlural(alphabetCipherTasks.length, "задание", "задания", "заданий")}</strong>
+              </button>
+            </div>
+          ) : crosswords ? (
+            <div className="olympiad-exercises">
+              <button type="button" className="olympiad-card" onClick={() => { setPractice("crossword"); scrollTo(0, 0); }}>
+                <h2>Кроссворды</h2>
+                <p>Сетки и определения</p>
+                <strong className="olympiad-count">{crosswordPuzzles.length} {ruPlural(crosswordPuzzles.length, "задание", "задания", "заданий")}</strong>
               </button>
             </div>
           ) : numbersImages ? (

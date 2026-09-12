@@ -1,0 +1,78 @@
+.crossword-layout{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  width:100%;
+  max-width:100%;
+  margin:0;
+}
+.crossword-layout-main{
+  display:flex;
+  flex-direction:row;
+  flex-wrap:nowrap;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:32px;
+  width:100%;
+  max-width:100%;
+}
+.crossword-layout-board{
+  flex:0 0 auto;
+  min-width:0;
+  max-width:100%;
+  padding:2px;
+  overflow-x:auto;
+}
+.crossword-layout .olympiad-crossword{
+  width:max-content;
+  max-width:none;
+  grid-template-columns:repeat(var(--crossword-cols),48px);
+  gap:2px;
+}
+.crossword-layout .olympiad-crossword-cell{
+  margin:0;
+  border:none;
+  box-shadow:0 0 0 2px #263d3b;
+}
+.crossword-layout-clues,
+.crossword-layout .olympiad-crossword-clues{
+  display:flex;
+  flex-direction:column;
+  flex:1 1 0%;
+  gap:20px;
+  min-width:0;
+  width:auto;
+  word-break:normal;
+  overflow-wrap:break-word;
+  white-space:normal;
+}
+.crossword-layout-clues p,
+.crossword-layout .olympiad-crossword-clue-title,
+.crossword-layout .olympiad-crossword-clue,
+.olympiad-solution .crossword-layout-clues p{
+  min-width:0;
+  width:100%;
+  max-width:none;
+  word-break:normal;
+  overflow-wrap:break-word;
+  white-space:normal;
+}
+.crossword-layout .olympiad-actions,
+.crossword-layout .olympiad-error{
+  width:100%;
+}
+@media (max-width:799px){
+  .crossword-layout-main{
+    flex-direction:column;
+    gap:22px;
+  }
+  .crossword-layout-board,
+  .crossword-layout-clues,
+  .crossword-layout .olympiad-crossword-clues{
+    width:100%;
+    flex:0 0 auto;
+  }
+  .crossword-layout:not(.crossword-layout-solved) .crossword-layout-clues{
+    order:-1;
+  }
+}

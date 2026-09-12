@@ -1582,6 +1582,78 @@ header .brand-icon {
   line-height:1.35;
 }
 .olympiad-figure-caption .olympiad-num-item{font-weight:700}
+.olympiad-crossword-wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin:0 0 8px;max-width:100%}
+.olympiad-crossword{
+  display:grid;
+  grid-template-columns:repeat(var(--crossword-cols),minmax(0,1fr));
+  width:min(100%,calc(var(--crossword-cols) * 52px));
+  max-width:100%;
+  gap:0;
+}
+.olympiad-crossword-empty{min-width:0;aspect-ratio:1}
+.olympiad-crossword-cell{
+  position:relative;
+  min-width:0;
+  aspect-ratio:1;
+  border:2px solid #263d3b;
+  background:#fffdf5;
+  margin:-1px 0 0 -1px;
+}
+.olympiad-crossword-cell.is-selected{background:#d9e7e5}
+.olympiad-crossword-cell.is-wrong{background:#f3d0cc}
+.olympiad-crossword-num{
+  position:absolute;
+  top:2px;
+  left:3px;
+  z-index:1;
+  font-family:Arial,sans-serif;
+  font-size:9px;
+  font-weight:700;
+  line-height:1;
+  color:#285670;
+  pointer-events:none;
+}
+.olympiad-crossword-input{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:10px 0 0;
+  border:0;
+  background:transparent;
+  color:#285670;
+  font-family:Georgia,serif;
+  font-size:clamp(16px,4.4vw,24px);
+  font-weight:700;
+  line-height:1;
+  text-align:center;
+  text-transform:uppercase;
+  caret-color:#285670;
+}
+.olympiad-crossword-input:focus{outline:none}
+.olympiad-crossword-cell:focus-within{outline:3px solid #b74335;outline-offset:-2px;z-index:2}
+.olympiad-crossword-clues{display:flex;flex-direction:column;gap:16px;min-width:0}
+.olympiad-crossword-clue-title{margin:0 0 8px;font-weight:800;color:#285670;font-size:18px;line-height:1.3}
+.olympiad-crossword-clue{
+  display:block;
+  width:100%;
+  margin:0 0 8px;
+  padding:0;
+  border:0;
+  background:none;
+  color:inherit;
+  font:inherit;
+  font-size:20px;
+  line-height:1.45;
+  text-align:left;
+  cursor:pointer;
+}
+.olympiad-crossword-clue.is-active{color:#285670;font-weight:700}
+@media (min-width:860px){
+  .olympiad-crossword-wrap{grid-template-columns:minmax(0,auto) minmax(0,1fr);align-items:start}
+  .olympiad-crossword{width:min(100%,calc(var(--crossword-cols) * 48px))}
+}
 .olympiad-figure-rocket{
   box-sizing:border-box;
   width:360px;
@@ -1603,8 +1675,9 @@ header .brand-icon {
   .olympiad-back:hover{color:#b74335}
   .olympiad-card:hover{background:#d9e7e5;border-color:#28536d}
   .olympiad-alpha-search-toggle:hover{background:#d9e7e5;border-color:#28536d}
+  .olympiad-crossword-clue:hover{color:#285670}
 }
-.olympiad-back:focus-visible,.olympiad-card:focus-visible,.olympiad-alpha-search-toggle:focus-visible{
+.olympiad-back:focus-visible,.olympiad-card:focus-visible,.olympiad-alpha-search-toggle:focus-visible,.olympiad-crossword-clue:focus-visible{
   outline:3px solid #b74335;
   outline-offset:3px;
 }
@@ -1634,4 +1707,9 @@ header .brand-icon {
   .olympiad-num-track,.olympiad-num-step{font-size:20px!important}
   .olympiad-figure-frame{padding:16px 12px}
   .olympiad-figure-caption{font-size:18px!important}
+  .olympiad-crossword{width:100%}
+  .olympiad-crossword-input{font-size:clamp(14px,5.2vw,20px);padding-top:8px}
+  .olympiad-crossword-num{font-size:8px}
+  .olympiad-crossword-clue-title{font-size:16px}
+  .olympiad-crossword-clue{font-size:18px}
 }
